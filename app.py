@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask import request
 from pymongo import MongoClient
-import base64
+import base64, random
 
 client = MongoClient('localhost', 27017)
 db = client.users
@@ -141,7 +141,7 @@ def masking(text):
     return text
 
 # 공개된 데이터
-@app.route('/api/public/data', methods=['POST'])
+@app.route('/api/public/data', methods=['GET'])
 def publicData():
     
     # 닉네임 List 전달
@@ -150,9 +150,15 @@ def publicData():
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
 
 # 랜덤 유저 전달
-@app.route('/api/randUser', methods=['POST'])
+@app.route('/api/randUser', methods=['GET'])
 def randUser():
-    return 'rand user'
+    
+    # 닉네임 List 전달
+    nicknames = get_nicknames_with_true_value()
+    # 난수 추출
+    random_nickname = random.choice(nicknames)
+    
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
 
 # 일반 질문 1
 @app.route('/api/addQuestion/1')
