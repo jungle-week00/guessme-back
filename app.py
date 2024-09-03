@@ -65,6 +65,11 @@ def register():
     if existing_entry:
         return jsonify({'result' : 'failed', 'msg' : '중복된 값이 존재합니다.'})
     
+    # DB에서 입력받은 NickName과 동일한 값이 있을 경우 Return
+    duple_nick_name = db.userInfo.find_one({'nickName' : userNickname})
+    if duple_nick_name:
+        return jsonify({'result' : 'failed', 'msg' : '중복된 값이 존재합니다.'})
+    
     new_userInfo = {
         "id" : userID,
         "pw" : userPW,
@@ -119,7 +124,7 @@ def privateData():
 def get_nicknames_with_true_value():
     nicknames = db.userInfo.find(
         { 'hasIntroduce' : True},
-        {'nickName': 1, '_id': 0}  # nickname 필드만 선택하고 _id는 제외
+        {'nickName': 1, '_id': 0} 
     )
     return [nickname['nickName'] for nickname in nicknames]
 
