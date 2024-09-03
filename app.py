@@ -111,11 +111,23 @@ def login():
 
 
 # 비공개 데이터 ( Masking, Blur )
-@app.route('/api/private/data', methods=['POST'])
+@app.route('/api/private/data', methods=['GET'])
 def privateData():
-    return 'Masking and Blur'
+    print(get_nicknames_with_true_value())
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행받았습니다.'})
+
+def get_nicknames_with_true_value():
+    nicknames = db.userInfo.find(
+        { 'hasIntroduce' : True},
+        {'nickName': 1, '_id': 0}  # nickname 필드만 선택하고 _id는 제외
+    )
+    return [nickname['nickName'] for nickname in nicknames]
 
 # Text 마스킹
+def masking(text):
+    if len(text) > 1:
+        return text[0] + 'X' * (len(text) - 1)
+    return text
 
 # 공개된 데이터
 @app.route('/api/public/data', methods=['POST'])
