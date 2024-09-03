@@ -60,10 +60,6 @@ def register():
     # nickname
     userNickname = request.form['nickname']
     
-    # Debug 확인용
-    # print(userID + " : " + userPW + " : " + userProfile.filename + " : " + userNickname)
-    # return jsonify({'result' : 'failed', 'msg' : '정상 연결되었습니다.'})
-    
     # DB에서 입력받은 ID와 동일한 값이 있을 경우 Return
     existing_entry = db.userInfo.find_one({'id' : userID})
     if existing_entry:
@@ -74,6 +70,7 @@ def register():
         "pw" : userPW,
         "profile" : userProfile.filename,
         "nickName" : userNickname,
+        "hasIntroduce" : False,
         "question1" : "",
         "correctAnswer1" : "",
         "incorrectAnswers1" : [],
@@ -100,15 +97,25 @@ def register():
     
 
 # 로그인 기능
-@app.route('/api/signin', methods=['GET'])
+@app.route('/api/signin', methods=['POST'])
 def login():
-    return 'Login'
+    userId = request.form['id']
+    userPw = request.form['pw']
+    
+    # DB에 있는 데이터와 비교하기
+    dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
+    if dupleUser:
+        return jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.'})
+    else:
+        return jsonify({'result' : 'failed', 'msg' : '로그인이 실패했습니다.'})
 
 
 # 비공개 데이터 ( Masking, Blur )
 @app.route('/api/private/data', methods=['POST'])
 def privateData():
     return 'Masking and Blur'
+
+# Text 마스킹
 
 # 공개된 데이터
 @app.route('/api/public/data', methods=['POST'])
