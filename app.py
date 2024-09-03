@@ -118,7 +118,13 @@ def login():
 # 비공개 데이터 ( Masking, Blur )
 @app.route('/api/private/data', methods=['GET'])
 def privateData():
-    print(get_nicknames_with_true_value())
+    nicknames = get_nicknames_with_true_value()
+    masking_nickanmes = []
+    
+    for name in nicknames:
+        masking_nickanmes.append(masking(name))
+        
+    print(masking_nickanmes)
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행받았습니다.'})
 
 def get_nicknames_with_true_value():
