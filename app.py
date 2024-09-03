@@ -125,7 +125,7 @@ def privateData():
         masking_nickanmes.append(masking(name))
         
     print(masking_nickanmes)
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행받았습니다.'})
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
 
 def get_nicknames_with_true_value():
     nicknames = db.userInfo.find(
@@ -143,7 +143,11 @@ def masking(text):
 # 공개된 데이터
 @app.route('/api/public/data', methods=['POST'])
 def publicData():
-    return 'None Masking and Blur'
+    
+    # 닉네임 List 전달
+    nicknames = get_nicknames_with_true_value()
+    
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
 
 # 랜덤 유저 전달
 @app.route('/api/randUser', methods=['POST'])
