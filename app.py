@@ -157,6 +157,8 @@ def randUser():
     nicknames = get_nicknames_with_true_value()
     # 난수 추출
     random_nickname = random.choice(nicknames)
+    random_user_id = db.userInfo.find_one({'nickName' : random_nickname}, {'_id' : 0})['id']
+    print(random_user_id)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
 
