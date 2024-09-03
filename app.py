@@ -48,7 +48,6 @@ def showIntroduce():
 # 회원가입 기능
 @app.route('/api/signup', methods=['POST'])
 def register():
-    
     # ID
     userID = request.form['id']
     # PW
