@@ -189,7 +189,8 @@ def login():
             expires_delta = expires,
             additional_claims={
                 'name': user['nickName'],
-                'profile_image':user.get('profile','')
+                'profile_image':user.get('profile',''),
+                # 'introduced': dupleUser['hasIntroduce']
             }
         )
         response = jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : access_token})

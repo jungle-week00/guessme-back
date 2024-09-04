@@ -59,6 +59,21 @@
 
         <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
         <script>
+
+            //페이지 로딩 시 showQuiz() 호출.
+            $(document).ready(function () {
+                // 쿠키에서 'logged_in' 값 가져오기
+                let token = getCookie("your_token_cookie_name");  // 쿠키 이름에 맞게 수정 필요
+                let logged_in = false;
+
+                if (token) {
+                    // 여기에서 토큰의 유효성을 확인하거나 단순히 존재 여부에 따라 설정할 수 있음
+                    logged_in = true;
+                }
+                showQuiz(logged_in);
+            });
+
+
             // 쿠키 값을 가져오는 함수
             function getCookie(name) {
                 let value = "; " + document.cookie;
@@ -95,6 +110,40 @@
 
                 $("#qlist").append(temp_html);
             }
+
+            function showQuiz(logged_in){ //api 통해 내용 받아 카드들 내려주는 함수
+                $('#qlist').html("");
+
+                if (logged_in == true)
+                {
+                    $.ajax({
+                        type:"GET",
+                        url:"/api/public/data",
+                        data:{},
+                        success: function (response){
+                            let quizs = response["data"];
+                            for (let i = 0; i < quizs[2].length; i++){
+                                makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
+                            }
+                        }
+                    })
+                }
+
+                else
+                {
+                    $.ajax({
+                        type:"GET",
+                        url:"/api/private/data",
+                        data:{},
+                        success: function (response){
+                            let quizs = response["data"];
+                            for (let i = 0; i < quizs[2].length; i++){
+                                makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
+                            }
+                        }
+                    })
+                }
+            }
         </script>
     </head>
 
@@ -102,7 +151,6 @@
     <!-- HTML 태그를 이용해서 layout 을 대략적으로 잡아두고, -->
     <!-- 위에 정의된 JavaScript 를 통해 동적으로 데이터를 조작해 최종 HTML 이 만들어집니다. -->
     <body>
-
         <!-- 제목 부분 -->
         <section class="hero is-link">
             <div class="hero-body wrap">
