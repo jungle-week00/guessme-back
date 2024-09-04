@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>수정할 항목 선택</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+		/>
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+			}
+
+			.wrapper {
+				max-width: 500px;
+				min-height: 400px; /* 세로 길이를 늘리기 위해 최소 높이 설정 */
+				margin: 50px auto;
+				padding: 40px 20px;
+				border: 1px solid #ccc;
+				border-radius: 8px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center; /* 가운데 정렬 */
+			}
+
+			.header {
+				text-align: center;
+				font-size: 1.5rem;
+				margin-bottom: 30px;
+				background-color: #3c8dbc;
+				padding: 15px;
+				border-bottom: 2px solid #004a99;
+				color: white;
+				border-radius: 8px 8px 0 0;
+				width: calc(100% + 40px);
+				margin-left: -20px;
+				margin-top: -40px;
+			}
+
+			.button-container {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 15px; /* 간격을 조금 더 넓게 설정 */
+				margin-top: 20px;
+				flex-grow: 1; /* 요소의 간격이 고르게 분포되도록 설정 */
+			}
+
+			.button-container button {
+				background-color: white;
+				border: 2px solid #ccc;
+				color: black;
+				transition: all 0.3s ease;
+				padding: 15px 10px; /* 버튼 패딩을 넉넉하게 설정 */
+				font-size: 1.1rem; /* 글자 크기 확대 */
+			}
+
+			.button-container button.is-selected {
+				background-color: #209cee;
+				color: white;
+				border-color: #209cee;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<!-- 상단 제목 -->
+			<div class="header">수정할 항목 선택</div>
+
+			<!-- 수정할 항목 선택 버튼 -->
+			<div class="button-container">
+				<button class="button" data-item="1">문제 1</button>
+				<button class="button" data-item="2">문제 2</button>
+				<button class="button" data-item="3">문제 3</button>
+				<button class="button" data-item="4">문제 4</button>
+				<button class="button" data-item="5">문제 5</button>
+				<button class="button" data-item="intro">자기소개</button>
+			</div>
+		</div>
+
+		<!-- jQuery CDN -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			$(document).ready(function () {
+				// 버튼 클릭 시 선택 처리 및 수정 폼으로 이동
+				$('.button').click(function () {
+					// 모든 버튼에서 is-selected 클래스 제거
+					$('.button').removeClass('is-selected');
+
+					// 클릭한 버튼에 is-selected 클래스 추가
+					$(this).addClass('is-selected');
+
+					// 선택된 항목을 기반으로 수정 폼으로 이동
+					const selectedItem = $(this).data('item');
+
+					// 수정할 항목에 따라 리다이렉트
+					if (selectedItem === 'intro') {
+						window.location.href = `/edit_intro`; // 자기소개 수정
+					} else {
+						window.location.href = `/edit_quiz/${selectedItem}`; // 퀴즈 수정
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

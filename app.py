@@ -540,13 +540,13 @@ def get_quiz_data(user_id):
 
 @app.route('/quiz/<string:user_id>', methods=['GET'])
 def get_all_quizzes(user_id):
-    
-  user = user_collection.find_one({"user_id": user_id})
-  if not user:
-    return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
+    user = user_collection.find_one({"user_id": user_id})
+    if not user:
+        return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
 
-  #return jsonify(user["quizzes"]), 200
-  return render_template('quiz.html', user = user_id)
+    # 퀴즈 데이터를 quiz.html로 넘겨 렌더링
+    return render_template('quiz.html', user=user_id)
+
 
 @app.route('/quiz/<string:user_id>/<int:quiz_number>', methods=['GET'])
 def get_quiz(user_id, quiz_number):

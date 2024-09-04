@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>퀴즈 수정</title>
+		<link rel="stylesheet" href="/static/css/style.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+		/>
+		<style>
+			.question-input {
+				margin-bottom: 30px;
+			}
+			.answer-input {
+				display: grid;
+				gap: 10px;
+				margin-bottom: 20px;
+			}
+			.answer-input > input {
+				margin-bottom: 5px;
+			}
+			.bottom-buttons {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<!-- 상단 제목 -->
+			<div class="header">퀴즈 수정</div>
+
+			<!-- 질문 -->
+			<div class="question-input">
+				<input
+					id="question"
+					class="input is-rounded"
+					type="text"
+					placeholder="질문을 입력하세요."
+				/>
+			</div>
+
+			<!-- 보기 버튼 (2*3 배열) -->
+			<div class="answer-input">
+				<input
+					id="correct-answer"
+					class="input is-rounded correct-answer"
+					type="text"
+					placeholder="정답"
+				/>
+				<input
+					id="wrong-answer-1"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기2"
+				/>
+				<input
+					id="wrong-answer-2"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기3"
+				/>
+				<input
+					id="wrong-answer-3"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기4"
+				/>
+			</div>
+
+			<!-- 저장 버튼 -->
+			<div class="bottom-buttons">
+				<button id="save-button" class="button is-primary">저장</button>
+			</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			const userId = 'USER_ID'; // 실제 userId는 서버에서 받아와야 함
+			const quizNumber = 'QUIZ_NUMBER'; // 실제 quizNumber는 서버에서 받아와야 함
+
+			// 페이지 로드 시 기존 퀴즈 데이터 불러오기
+			$(document).ready(function () {
+				$.ajax({
+					url: `/quiz/${userId}/${quizNumber}`,
+					method: 'GET',
+					dataType: 'json',
+					success: function (data) {
+						// 기존 데이터로 input 필드 채우기
+						$('#question').val(data.title);
+						$('#correct-answer').val(data.answer.correct);
+						$('#wrong-answer-1').val(data.answer.wrong[0]);
+						$('#wrong-answer-2').val(data.answer.wrong[1]);
+						$('#wrong-answer-3').val(data.answer.wrong[2]);
+					},
+					error: function (xhr, status, error) {
+						alert('퀴즈 데이터를 불러오는 중 오류가 발생했습니다.');
+					},
+				});
+			});
+
+			// 저장 버튼 클릭 시 데이터 서버로 전송
+			$('#save-button').click(function () {
+				const question = $('#question').val();
+				const correctAnswer = $('#correct-answer').val();
+				const wrongAnswer1 = $('#wrong-answer-1').val();
+				const wrongAnswer2 = $('#wrong-answer-2').val();
+				const wrongAnswer3 = $('#wrong-answer-3').val();
+
+				const data = {
+					question: question,
+					correctAnswer: correctAnswer,
+					wrongAnswers: [wrongAnswer1, wrongAnswer2, wrongAnswer3],
+				};
+
+				// 데이터 서버로 전송
+				$.ajax({
+					url: `/api/quiz/${userId}/${quizNumber}`,
+					method: 'PUT',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					success: function (response) {
+						alert('수정 내용이 성공적으로 저장되었습니다.');
+						window.location.href = '/';
+					},
+					error: function (xhr, status, error) {
+						alert('수정 중 오류가 발생했습니다.');
+					},
+				});
+			});
+		</script>
+	</body>
+</html>

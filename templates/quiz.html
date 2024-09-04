@@ -135,7 +135,6 @@
 			}
 
 			// 정답 선택 처리
-			// 정답 선택 처리
 			function selectAnswer(button, selectedOption, correctAnswer) {
 				// 모든 버튼에서 is-success, is-danger 클래스 제거
 				$('.answer-buttons .button').removeClass('is-success is-danger');
@@ -186,11 +185,11 @@
 
 				let resultMessage = '';
 				if (score === 5) {
-					resultMessage = '혹시 저를 알고 계셨나요..?';
+					resultMessage = `${score}점! 혹시 저를 알고 계셨나요..?`;
 				} else if (score === 4) {
-					resultMessage = '1점이 모자라네요. 아쉬워요!';
+					resultMessage = `${score}점! 저를 잘 파악하고 계시군요!`;
 				} else {
-					resultMessage = '우리 더 친해져요!';
+					resultMessage = `${score}점! 우리 더 친해져요!`;
 				}
 
 				// 결과 화면을 동적으로 렌더링
@@ -202,23 +201,29 @@
 					<!-- 결과 멘트 -->
 					<div class="content">
 						<p class="title is-4">${resultMessage}</p>
-						<p class="score">${score}점!</p>
 					</div>
-		
-					<!-- 프로필 이미지와 인사말 -->
-					<div class="profile-section">
-						<img src="${profileImage}" alt="Profile Picture" />
-						<!-- 프로필 사진 -->
-						<div class="greeting">
-							안녕하세요.<br />
-							${userName}입니다.
-						</div>
-					</div>
-		
-					<!-- 자기소개 -->
-					<div class="intro-section">
-						<p>${intro}</p>
-					</div>
+
+				  <div class="card">
+		<div class="card-image">
+			<figure class="image is-4by3">
+				<img
+					src="https://bulma.io/assets/images/placeholders/1280x960.png"
+					alt="Placeholder image"
+				/>
+			</figure>
+		</div>
+		<div class="card-content">
+			<div class="media">
+				<div class="media-content">
+					<p class="title is-4">${userName}</p>
+				</div>
+			</div>
+
+			<div class="content">
+				${intro}
+			</div>
+		</div>
+	</div>
 		
 					<!-- 홈으로 돌아가기 버튼 -->
 					<div class="bottom-buttons" style="text-align: center; margin-top: 20px;">

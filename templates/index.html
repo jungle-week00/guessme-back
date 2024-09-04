@@ -141,21 +141,44 @@
                 });
             }
 
-            function makeCard(id,profile_image,name) { //카드 작성 함수
-                //각 퀴즈 유저의 id태그를 가져와 카드마다 적용.
+            function handleClickCard(id) {
+                // 해당 id에 맞는 퀴즈 데이터 요청 및 페이지 이동
+                $.ajax({
+                    type: "GET",
+                    url: `/quiz/${id}`,  // API 엔드포인트 호출
+                    success: function(response) {
+                        // 성공적으로 데이터를 불러왔을 때 퀴즈 페이지로 이동
+                        window.location.href = `/quiz/${id}`;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching quiz:", error);
+                        alert("퀴즈를 불러오는 데 실패했습니다.");
+                    }
+                });
+            }
+
+
+            function makeCard(id, profile_image, name) {
+                // 각 퀴즈 유저의 id 태그를 가져와 카드마다 적용
                 let temp_html = `<div class="column is-one-third">
                                     <div class="card">
                                         <div class="card-image" id="${id}">
                                             <img src="${profile_image}" alt="Profile Photo"/>
                                         </div>
                                         <div class="card-content">
-                                            <a href="" span class="quiz-title"><h1>${name}</h1></span></a>
+                                            <h1 class="quiz-title">${name}</h1>
                                         </div>
                                     </div>
                                 </div>`;
 
                 $("#qlist").append(temp_html);
+
+                // 카드 클릭 시 해당 유저의 퀴즈 페이지로 이동
+                $(`#${id}`).closest('.card').on('click', function() {
+                    handleClickCard(id);
+                });
             }
+
 
             function showQuiz(logged_in){ //api 통해 내용 받아 카드들 내려주는 함수
                 $('#qlist').html("");
@@ -243,7 +266,7 @@
                     </div>
                     <div id="editButton">
                         <a href="{{url_for('editQuizSelection')}}">
-                        <button class="button is-white is-large" #>자기소개 수정</button>
+                        <button class="button is-white is-large" onclick="">자기소개 수정</button>
                         </a>
                     </div>
                     <button class="button is-white is-large" style="margin-top: 10px;" >랜덤 맞추기!</button>
