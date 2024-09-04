@@ -174,19 +174,22 @@ def register():
 def login():
     userId = request.form['id']
     userPw = request.form['pw']
-    hash_pw = hash_password(userPw)
+    
     
     # DB에 있는 데이터와 비교하기
-    dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
-    if dupleUser:
+    user = db.userInfo.find_one({'id' : userId})
+    if user:
+        if not verify_password(user['pw'], userPw):
+            return jsonify({'result' : 'failed', 'msg' : '로그인이 실패했습니다.'})
+        
         # JWT 토큰 생성 (유효시간 60분)
         expires = datetime.timedelta(minutes=60)
         access_token = create_access_token(
             identity = userId, 
             expires_delta = expires,
             additional_claims={
-                'name': dupleUser['nickName'],
-                'profile_image':dupleUser.get('profile','')
+                'name': user['nickName'],
+                'profile_image':user.get('profile','')
             }
         )
         response = jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : access_token})
