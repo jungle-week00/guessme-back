@@ -1,6 +1,8 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, url_for, redirect
 from pymongo import MongoClient
 from flask_jwt_extended import *
+from werkzeug.utils import secure_filename
+import os
 
 import base64, random
 
@@ -8,11 +10,12 @@ client = MongoClient('localhost', 27017)
 db = client.users
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = './static/uploads'
 app.config.update(
     JWT_SECRET_KEY = "TEST"
 )
-jwt = JWTManager(app)
 
+jwt = JWTManager(app)
 
 ### Page Container
 
@@ -58,9 +61,13 @@ def register():
     # PW
     userPW = request.form['pw']
     # Profile Image
-    userProfile = request.files['profile_image']
+    userProfile = request.files['profile_image']    
+    userProfile.save("static/img")
+    
     if userProfile.filename == '':
         return jsonify({'result' : 'failed', 'msg' : '현재 이미지가 비어있습니다. '})
+    file_name = secure_filename(userProfile.filename)
+    userProfile.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
     
     # nickname
     userNickname = request.form['nickname']
@@ -124,12 +131,17 @@ def login():
 @app.route('/api/private/data', methods=['GET'])
 def privateData():
     nicknames = get_nicknames_with_true_value()
+    data = []
     masking_nickanmes = []
     
     for name in nicknames:
         masking_nickanmes.append(masking(name))
-        
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'nicknames' : masking_nickanmes})
+    
+    data.append(masking_nickanmes)
+    profile_images_url = get_profile_image_with_true_value()
+    data.append(profile_images_url)
+    
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
 # 자기소개 페이지가 존재하는 사람들의 이름을 관리
 def get_nicknames_with_true_value():
@@ -138,6 +150,21 @@ def get_nicknames_with_true_value():
         {'nickName': 1, '_id': 0} 
     )
     return [nickname['nickName'] for nickname in nicknames]
+
+def get_profile_image_with_true_value():
+    temp_profile_image_titles = db.userInfo.find(
+        { 'hasIntroduce' : True},
+        { 'profile' : 1, '_id' : 0}
+    )    
+    # profile images들의 Title Text를 가져온다.
+    profile_images = [profile_image_title['profile'] for profile_image_title in temp_profile_image_titles]
+    
+    images_url = []
+    # Title Text
+    for title in profile_images:
+        # title 데이터를 가져와서 상대 경로로 images 파일을 가져온다.
+        images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+    return images_url
 
 # Text 마스킹
 def masking(text):
@@ -155,7 +182,13 @@ def publicData():
     
     # 닉네임 List 전달
     nicknames = get_nicknames_with_true_value()
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'nicknames' : nicknames})
+    images_url = get_profile_image_with_true_value()
+    
+    data = []
+    data.append(nicknames)
+    data.append(images_url)
+    
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
 # 랜덤 유저 전달
 @app.route('/api/randUser', methods=['GET'])
