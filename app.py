@@ -146,9 +146,9 @@ def showIntroduce():
 
     return render_template('quiz.html', logged_in=logged_in, name=name, profile_image=profile_image)
 
-# 자기소개 페이지
-@app.route('/introduce')
-def showIntroduce():
+# 자기소개 수정 선택 페이지
+@app.route('/edit/select')
+def editQuizSelection():
      # 쿠키에서 JWT 토큰 가져오기
     token = request.cookies.get('access_token')
 
@@ -171,7 +171,63 @@ def showIntroduce():
     else:
         logged_in = False
 
-    return render_template('quiz.html', logged_in=logged_in, name=name, profile_image=profile_image)
+    return render_template('edit-selection.html', logged_in=logged_in, name=name, profile_image=profile_image)
+
+
+# 자기소개 퀴즈 수정 페이지
+@app.route('/edit/quiz')
+def editQuiz():
+     # 쿠키에서 JWT 토큰 가져오기
+    token = request.cookies.get('access_token')
+
+    name = ''
+    profile_image = ''
+    logged_in = False
+    
+    if token:
+        # 토큰이 유효한지 확인
+        try:
+            decoded_token = decode_token(token)
+            identity = decoded_token['sub'] # JWT에서 identity 추출
+            id = decoded_token.get('id','')
+            name = decoded_token.get('name','')
+            profile_image = decoded_token.get('profile_image', '')
+            # introduced = decoded_token.get('introduced','')
+            logged_in = True
+        except Exception as e:
+            logged_in = False
+    else:
+        logged_in = False
+
+    return render_template('edit-quiz.html', logged_in=logged_in, name=name, profile_image=profile_image)
+
+
+# 자기소개 퀴즈 수정 페이지
+@app.route('/edit/intro')
+def editIntro():
+     # 쿠키에서 JWT 토큰 가져오기
+    token = request.cookies.get('access_token')
+
+    name = ''
+    profile_image = ''
+    logged_in = False
+    
+    if token:
+        # 토큰이 유효한지 확인
+        try:
+            decoded_token = decode_token(token)
+            identity = decoded_token['sub'] # JWT에서 identity 추출
+            id = decoded_token.get('id','')
+            name = decoded_token.get('name','')
+            profile_image = decoded_token.get('profile_image', '')
+            # introduced = decoded_token.get('introduced','')
+            logged_in = True
+        except Exception as e:
+            logged_in = False
+    else:
+        logged_in = False
+
+    return render_template('edit-intro.html', logged_in=logged_in, name=name, profile_image=profile_image)
 
 
 ### API
