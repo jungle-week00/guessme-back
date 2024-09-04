@@ -185,6 +185,17 @@ def logout():
     response.delete_cookie('access_token')  # 쿠키에서 JWT 토큰 삭제
     return response
 
+# 자기소개 작성한 회원들 정보 넘겨주는 api
+@app.route('/api/quizs', methods=['GET'])
+def get_quizs():
+    try:
+        # DB에서 hasIntroduce가 True인 사용자 정보 조회
+        users_with_introduced = list(db.userInfo.find({'hasIntroduce': True}, {'_id': 0, 'id': 1, 'nickName': 1, 'profile': 1}))
+        
+        return jsonify({'result': 'success', 'quizs': users_with_introduced})
+    except Exception as e:
+        return jsonify({'result': 'fail', 'msg': str(e)})
+
 
 # 비공개 데이터 ( Masking, Blur )
 @app.route('/api/private/data', methods=['GET'])

@@ -95,24 +95,6 @@
 
                 $("#qlist").append(temp_html);
             }
-
-            function showQuiz(){ //화면에 카드 뿌려주는 함수
-                $('#qlist').html(""); //qlist 부분의 데이터를 싹 지움
-
-                $.ajax({
-                    type: "GET",
-                    url: "/api/quizs",
-                    data: {},
-                    success: function (response) {
-                        if (response["result"] == "success"){
-                            let quizs= response["quizs"];
-                            for (let i = 0; i < quizs.length; i++){
-                                makeCard(quizs[i]["id"],quizs[i]["profile"],quizs[i]["nickName"])
-                            }
-                        }
-                    }
-                })
-            }
         </script>
     </head>
 
