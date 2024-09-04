@@ -60,16 +60,22 @@
         <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
         <script>
 
+            
+            
             //페이지 로딩 시 showQuiz() 호출.
             $(document).ready(function () {
                 // 쿠키에서 'logged_in' 값 가져오기
-                let token = getCookie("access_token"); 
-                let logged_in = false;
+                // let token = getCookie("access_token");
+                // console.log(token); 
+                // let logged_in = false;
 
-                if (token) {
-                    // 여기에서 토큰의 유효성을 확인하거나 단순히 존재 여부에 따라 설정할 수 있음
-                    logged_in = true;
-                }
+                // if (token) {
+                //     // 여기에서 토큰의 유효성을 확인하거나 단순히 존재 여부에 따라 설정할 수 있음
+                //     logged_in = true;
+                // }
+
+                let logged_in = $('#check_logged').text()
+                
                 showQuiz(logged_in);
             });
 
@@ -114,8 +120,9 @@
             function showQuiz(logged_in){ //api 통해 내용 받아 카드들 내려주는 함수
                 $('#qlist').html("");
                 
-                if (logged_in == true)
+                if (logged_in == 'True')
                 {
+                    console.log("여기 들어왔어용")
                     $.ajax({
                         type:"GET",
                         url:"/api/public/data",
@@ -189,6 +196,7 @@
             <!-- 로그인 상태일 때 -->
             <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;" >
                 <div class="hero-body button-section">
+                    <p style="display: none;" id="check_logged">{{logged_in}}</p>
                     <h1 >안녕하세요, {{name}} 님!</h1>
                     <a href="{{url_for('introduceEdit')}}">
                     <button class="button is-white is-large">자기소개 만들기</button></a>
@@ -209,7 +217,7 @@
 
         <!-- 동적으로 퀴즈 카드들이 들어갈 부분 -->
         <div id="qlist" class = "columns is-multiline"  >
-            <div class="column is-one-third">
+            <!-- <div class="column is-one-third">
                 <div class="card">
                     <div class="card-image">
                         <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
@@ -218,57 +226,7 @@
                         <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
                     </div>
                 </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
-                    </div>
-                    <div class="card-content">
-                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
-                    </div>
-                    <div class="card-content">
-                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
-                    </div>
-                    <div class="card-content">
-                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
-                    </div>
-                    <div class="card-content">
-                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
-                    </div>
-                    <div class="card-content">
-                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
-                    </div>
-                </div>
-            </div>
+            </div> -->
         </div>
     </body>
 </html>
