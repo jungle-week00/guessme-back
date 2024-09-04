@@ -175,7 +175,6 @@ def login():
     userId = request.form['id']
     userPw = request.form['pw']
     
-    
     # DB에 있는 데이터와 비교하기
     user = db.userInfo.find_one({'id' : userId})
     if user:
@@ -220,6 +219,7 @@ def privateData():
     profile_images_url = get_profile_image_with_true_value(0)
     data.append(profile_images_url)
     
+    
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
 # 자기소개 페이지가 존재하는 사람들의 이름을 관리
@@ -249,6 +249,13 @@ def get_profile_image_with_true_value(type):
             images_url.append(list({ url_for('static', filename='uploads/{}_blur.jpg'.format(title)) }))
     return images_url
 
+def get_id_with_true_value():
+    ids = db.userInfo.find(
+        { 'hasIntroduce' : True},
+        { 'id' : 1, '_id' : 0}
+    )
+    return [id['id'] for id in ids]
+
 # Text 마스킹
 def masking(text):
     if len(text) > 1:
@@ -266,10 +273,12 @@ def publicData():
     # 닉네임 List 전달
     nicknames = get_nicknames_with_true_value()
     images_url = get_profile_image_with_true_value(1)
+    id_datas = get_id_with_true_value()
     
     data = []
     data.append(nicknames)
     data.append(images_url)
+    data.append(id_datas)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
@@ -314,7 +323,6 @@ def addQuestion5():
 @app.route('/api/addIntroduce')
 def addIntroduce():
     return 'Add Introduce'
-
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
