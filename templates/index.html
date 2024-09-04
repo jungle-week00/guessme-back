@@ -113,7 +113,7 @@
 
             function showQuiz(logged_in){ //api 통해 내용 받아 카드들 내려주는 함수
                 $('#qlist').html("");
-
+                
                 if (logged_in == true)
                 {
                     $.ajax({
@@ -128,7 +128,6 @@
                         }
                     })
                 }
-
                 else
                 {
                     $.ajax({
@@ -137,7 +136,8 @@
                         data:{},
                         success: function (response){
                             let quizs = response["data"];
-                            for (let i = 0; i < quizs[2].length; i++){
+                            console.log(quizs)
+                            for (let i = 0; i < quizs[1].length; i++){
                                 makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
                             }
                         }

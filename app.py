@@ -254,7 +254,8 @@ def privateData():
     data.append(masking_nickanmes)
     profile_images_url = get_profile_image_with_true_value(0)
     data.append(profile_images_url)
-    
+    id_datas = get_id_with_true_value()
+    data.append(id_datas)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
@@ -383,10 +384,12 @@ def submit_intro(user_id):
             }}
         )
 
-    print(user_id)
-    # getUser = db.userInfo.find_one({'id' : user_id})
-    # print(getUser['hasIntroduce'])
-    # getUser['hasIntroduce'] = True
+    getUser = db.userInfo.find_one({'id' : user_id})
+    getUser['hasIntroduce'] = True
+    
+    db.userInfo.update_one({'id' : user_id},
+                           {'$set' : {'hasIntroduce' : True}})
+    
 
     return jsonify({'result': 'success'}), 201
 
