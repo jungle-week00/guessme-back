@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 from flask_jwt_extended import *
 
@@ -19,17 +19,17 @@ jwt = JWTManager(app)
 # Main Page
 @app.route('/')
 def home():
-    return 'This is Home!'
+    return render_template('index.html')
 
 # Sign In Page
 @app.route('/signin')
-def loginPage():
-    return 'Sign In Page'
+def signin():
+    return render_template('signin.html')
 
 # Signup Page
 @app.route('/signup')
-def registerPage():
-    return 'Sign Up Page'
+def signup():
+    return render_template('signup.html')
 
 # 자기소개 입력 페이지
 @app.route('/introduce/edit')

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>MBTI Quiz</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+		/>
+		<style>
+			.quiz-container {
+				max-width: 500px;
+				margin: 50px auto;
+				padding: 20px;
+				border: 1px solid #ccc;
+				border-radius: 8px;
+			}
+			.quiz-header {
+				text-align: center;
+				font-size: 1.5rem;
+				margin-bottom: 20px;
+				background-color: #3c8dbc;
+				padding: 15px;
+				border-bottom: 2px solid #004a99;
+				color: white;
+				border-radius: 8px 8px 0 0;
+				width: calc(100% + 40px);
+				margin-left: -20px;
+				margin-top: -20px;
+			}
+			.question {
+				font-size: 1.25rem; /* 질문 크기 확대 */
+				font-weight: bold;
+				margin-bottom: 20px;
+				text-align: center;
+			}
+			.textarea {
+				margin-bottom: 20px;
+				resize: none;
+			}
+			.answer-buttons {
+				display: grid;
+				grid-template-columns: 1fr 1fr; /* 2열 배치 */
+				gap: 10px;
+				margin-bottom: 20px;
+			}
+			.bottom-buttons {
+				text-align: center;
+			}
+			.is-selected {
+				background-color: #209cee; /* Bulma의 is-info 색상 */
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="quiz-container">
+			<!-- 상단 제목 -->
+			<div class="quiz-header">자기소개 입력</div>
+
+			<!-- 프로그레스바 -->
+			<progress class="progress is-info" value="20" max="100">20%</progress>
+
+			<!-- 질문 -->
+			<div class="question">당신의 MBTI는 무엇인가요?</div>
+
+			<!-- 설명 입력란 -->
+			<textarea class="textarea" placeholder="간단한 설명(선택)"></textarea>
+
+			<!-- 보기 버튼 (2*3 배열) -->
+			<div class="answer-buttons">
+				<button class="button" onclick="selectAnswer(this)">보기 1</button>
+				<button class="button" onclick="selectAnswer(this)">보기 2</button>
+				<button class="button" onclick="selectAnswer(this)">보기 3</button>
+				<button class="button" onclick="selectAnswer(this)">보기 4</button>
+				<button class="button" onclick="selectAnswer(this)">보기 5</button>
+			</div>
+
+			<!-- 다음 버튼 -->
+			<div class="bottom-buttons">
+				<button class="button is-primary">다음</button>
+			</div>
+		</div>
+
+		<script>
+			function selectAnswer(button) {
+				// 모든 버튼에서 is-selected 클래스 제거
+				const buttons = document.querySelectorAll('.answer-buttons .button');
+				buttons.forEach((btn) =>
+					btn.classList.remove('is-selected', 'is-info')
+				);
+
+				// 클릭한 버튼에 is-selected 및 is-info 클래스 추가
+				button.classList.add('is-selected', 'is-info');
+			}
+		</script>
+	</body>
+</html>

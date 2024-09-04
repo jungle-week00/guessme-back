@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <!-- 다양한 언어를 사용할 수 있도록 UTF-8 을 사용하도록 합니다. -->
+        <meta charset="UTF-8"/>
+
+        <!-- 반응형으로 동작하게 합니다. -->
+        <meta title="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- jQuery 를 포함합니다. -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" 
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <!-- CSS library 인 Bulma 를 포함합니다. -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
+
+        <!-- 텍스트형태로 되어있는 icon 을 쓸 수 있도록 Font awesome 을 포함합니다. -->
+        <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+
+        <title>니 내 누군지 아니? | Team 06</title>
+
+        <!-- 이 HTML 안에서 사용할 CSS 를 정의합니다. -->
+        <style>
+            .wrap {
+                margin: auto;
+                width: 50%;
+                max-width: 900px;
+            }
+
+            .qlist {
+                margin: auto;
+                max-width: 900px;
+            }
+
+            .center {
+                text-align: center;
+            }
+
+            .quiz-title{
+                font-weight: bolder;
+                font-size:20px;
+            }
+
+            .button-section{
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* 가로 중앙 정렬 */
+                text-align: center; /* 텍스트 중앙 정렬 */
+                margin-top: 10px;
+            }
+
+            .imgsizefix{
+                width:200px;
+            }
+
+        </style>
+
+        <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
+        <script>
+            
+        </script>
+    </head>
+
+    <!-- HTML 본문에 해당합니다. -->
+    <!-- HTML 태그를 이용해서 layout 을 대략적으로 잡아두고, -->
+    <!-- 위에 정의된 JavaScript 를 통해 동적으로 데이터를 조작해 최종 HTML 이 만들어집니다. -->
+    <body>
+
+        <!-- 제목 부분 -->
+        <section class="hero is-link">
+            <div class="hero-body wrap">
+                <div class="container center">
+                    <h1 class="title">
+                        니 내 누군지 아니?
+                    </h1>
+                    <h2 class="subtitle">
+                        자기소개 퀴즈 플랫폼 <br><br>
+                    </h2>
+                </div>
+
+                <!-- 로그아웃 상태일 때 -->
+                <div class="buttons is-right account-button">
+                    
+                    <a href="{{ url_for('signin') }}">
+                    <button class="button is-white">로그인</button>
+                    </a>
+                    
+                    <a href="{{ url_for('signup') }}">
+                    <button class="button is-white">회원가입</button>
+                    </a>
+
+                </div>
+                
+                <!-- 로그인 상태일 때 -->
+                <!-- <div class="buttons is-right account-button">
+                    <button class="button is-white">로그아웃</button>
+                </div> -->
+
+            </div>
+        </section>
+
+        <!-- 로그인 이전 버튼 섹션 -->
+        <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+            <div class="hero-body button-section">
+                <h1 >로그인 하고 자기소개를 만들어보세요!</h1>
+                <a href="{{ url_for('signin') }}">
+                    <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
+                </a>
+            </div>
+        </section>
+
+        <!-- 로그인 이후 버튼 섹션 -->
+        <!-- <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;" >
+            <div class="hero-body button-section">
+                <button class="button is-white is-large">자기소개 만들기</button>
+                <button class="button is-white is-large" style="margin-top: 10px;" >랜덤 맞추기!</button>
+            </div>
+        </section> -->
+
+        <!-- 동적으로 퀴즈 카드들이 들어갈 부분 -->
+        <div class="qlist columns is-multiline"  >
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='tmp_profile.jpg') }}" alt="Profile Photo"/>
+                    </div>
+                    <div class="card-content">
+                        <a href="" span class="quiz-title"><h1>tmp 제목</h1></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
