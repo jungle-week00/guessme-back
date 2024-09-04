@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image, ImageFilter
 import os, uuid
 
-import base64, random
+import base64, random, datetime
 
 client = MongoClient('localhost', 27017)
 db = client.users
@@ -23,7 +23,27 @@ jwt = JWTManager(app)
 # Main Page
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # 쿠키에서 JWT 토큰 가져오기
+    token = request.cookies.get('access_token')
+
+    name = ''
+    profile_image = ''
+    logged_in = False
+    
+    if token:
+        # 토큰이 유효한지 확인
+        try:
+            decoded_token = decode_token(token)
+            identity = decoded_token['sub'] # JWT에서 identity 추출
+            name = decoded_token.get('name','')
+            profile_image = decoded_token.get('profile_image', '')
+            logged_in = True
+        except Exception as e:
+            logged_in = False
+    else:
+        logged_in = False
+
+    return render_template('index.html', logged_in=logged_in, name=name, profile_image=profile_image)
 
 # Sign In Page
 @app.route('/signin')
@@ -127,7 +147,7 @@ def register():
         "incorrectAnswers5" : [],
     }
     
-    db.userInfo.insert_one(new_userInfo);
+    db.userInfo.insert_one(new_userInfo)
     return jsonify({'result' : 'success', 'msg' : '정상 값이 입력되었습니다.'})
     
 
@@ -140,9 +160,28 @@ def login():
     # DB에 있는 데이터와 비교하기
     dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
     if dupleUser:
-        return jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : create_access_token(identity = userId, expires_delta=60)})
+        # JWT 토큰 생성 (유효시간 60분)
+        expires = datetime.timedelta(minutes=60)
+        access_token = create_access_token(
+            identity = userId, 
+            expires_delta = expires,
+            additional_claims={
+                'name': dupleUser['nickName'],
+                'profile_image':dupleUser.get('profile','')
+            }
+        )
+        response = jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : access_token})
+        response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='Lax') # 쿠키 보안 설정
+        return response
     else:
         return jsonify({'result' : 'failed', 'msg' : '로그인이 실패했습니다.'})
+    
+# 로그아웃 기능
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    response = jsonify({'msg': '로그아웃 되었습니다.'})
+    response.delete_cookie('access_token')  # 쿠키에서 JWT 토큰 삭제
+    return response
 
 
 # 비공개 데이터 ( Masking, Blur )

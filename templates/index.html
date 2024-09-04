@@ -58,7 +58,26 @@
 
         <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
         <script>
-            
+            // 쿠키 값을 가져오는 함수
+            function getCookie(name) {
+                let value = "; " + document.cookie;
+                let parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
+
+            function logout() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/logout',
+                    success: function(response) {
+                        alert(response.msg);
+                        window.location.href = '/';
+                    },
+                    error: function(xhr) {
+                        alert('로그아웃 실패: ' + xhr.statusText);
+                    }
+                });
+            }
         </script>
     </head>
 
@@ -79,44 +98,48 @@
                     </h2>
                 </div>
 
-                <!-- 로그아웃 상태일 때 -->
-                <div class="buttons is-right account-button">
-                    
-                    <a href="{{ url_for('signin') }}">
-                    <button class="button is-white">로그인</button>
-                    </a>
-                    
-                    <a href="{{ url_for('signup') }}">
-                    <button class="button is-white">회원가입</button>
-                    </a>
-
-                </div>
-                
                 <!-- 로그인 상태일 때 -->
-                <!-- <div class="buttons is-right account-button">
-                    <button class="button is-white">로그아웃</button>
-                </div> -->
+                {% if logged_in %}
+                    <div class="buttons is-right account-button">
+                        <button class="button is-white" onclick="logout()">로그아웃</button>
+                    </div>
+                {% else %}
+                    <!-- 로그아웃 상태일 때 -->
+                    <div class="buttons is-right account-button">
+                        
+                        <a href="{{ url_for('signin') }}">
+                        <button class="button is-white">로그인</button>
+                        </a>
+                        
+                        <a href="{{ url_for('signup') }}">
+                        <button class="button is-white">회원가입</button>
+                        </a>
 
+                    </div>
+                {% endif %}
             </div>
         </section>
 
-        <!-- 로그인 이전 버튼 섹션 -->
-        <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
-            <div class="hero-body button-section">
-                <h1 >로그인 하고 자기소개를 만들어보세요!</h1>
-                <a href="{{ url_for('signin') }}">
-                    <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
-                </a>
-            </div>
-        </section>
-
-        <!-- 로그인 이후 버튼 섹션 -->
-        <!-- <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;" >
-            <div class="hero-body button-section">
-                <button class="button is-white is-large">자기소개 만들기</button>
-                <button class="button is-white is-large" style="margin-top: 10px;" >랜덤 맞추기!</button>
-            </div>
-        </section> -->
+        {% if logged_in %}
+            <!-- 로그인 상태일 때 -->
+            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;" >
+                <div class="hero-body button-section">
+                    <h1 >안녕하세요, {{name}} 님!</h1>
+                    <button class="button is-white is-large">자기소개 만들기</button>
+                    <button class="button is-white is-large" style="margin-top: 10px;" >랜덤 맞추기!</button>
+                </div>
+            </section>
+        {% else %}
+            <!-- 로그아웃 상태일 때 -->
+            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+                <div class="hero-body button-section">
+                    <h1 >로그인 하고 자기소개를 만들어보세요!</h1>
+                    <a href="{{ url_for('signin') }}">
+                        <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
+                    </a>
+                </div>
+            </section>
+        {% endif %}
 
         <!-- 동적으로 퀴즈 카드들이 들어갈 부분 -->
         <div class="qlist columns is-multiline"  >
