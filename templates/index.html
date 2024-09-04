@@ -17,8 +17,9 @@
 
         <!-- 텍스트형태로 되어있는 icon 을 쓸 수 있도록 Font awesome 을 포함합니다. -->
         <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 
-        <title>니 내 누군지 아니? | Team 06</title>
+        <a href="/"><title>니 내 누군지 아니? | Team 06</title></a>
 
         <!-- 이 HTML 안에서 사용할 CSS 를 정의합니다. -->
         <style>
@@ -28,7 +29,7 @@
                 max-width: 900px;
             }
 
-            .qlist {
+            #qlist {
                 margin: auto;
                 max-width: 900px;
             }
@@ -77,6 +78,40 @@
                         alert('로그아웃 실패: ' + xhr.statusText);
                     }
                 });
+            }
+
+            function makeCard(id,profile_image,name) { //카드 작성 함수
+                //각 퀴즈 유저의 id태그를 가져와 카드마다 적용.
+                let temp_html = `<div class="column is-one-third">
+                                    <div class="card">
+                                        <div class="card-image" id="${id}">
+                                            <img src="${profile_image}" alt="Profile Photo"/>
+                                        </div>
+                                        <div class="card-content">
+                                            <a href="" span class="quiz-title"><h1>${name}</h1></span></a>
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                $("#qlist").append(temp_html);
+            }
+
+            function showQuiz(){ //화면에 카드 뿌려주는 함수
+                $('#qlist').html(""); //qlist 부분의 데이터를 싹 지움
+
+                $.ajax({
+                    type: "GET",
+                    url: "/api/quizs",
+                    data: {},
+                    success: function (response) {
+                        if (response["result"] == "success"){
+                            let quizs= response["quizs"];
+                            for (let i = 0; i < quizs.length; i++){
+                                makeCard(quizs[i]["id"],quizs[i]["profile"],quizs[i]["nickName"])
+                            }
+                        }
+                    }
+                })
             }
         </script>
     </head>
@@ -142,7 +177,7 @@
         {% endif %}
 
         <!-- 동적으로 퀴즈 카드들이 들어갈 부분 -->
-        <div class="qlist columns is-multiline"  >
+        <div id="qlist" class = "columns is-multiline"  >
             <div class="column is-one-third">
                 <div class="card">
                     <div class="card-image">

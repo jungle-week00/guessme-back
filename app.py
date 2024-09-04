@@ -37,6 +37,7 @@ def home():
             identity = decoded_token['sub'] # JWT에서 identity 추출
             name = decoded_token.get('name','')
             profile_image = decoded_token.get('profile_image', '')
+            # introduced = decoded_token.get('introduced','')
             logged_in = True
         except Exception as e:
             logged_in = False
@@ -167,7 +168,8 @@ def login():
             expires_delta = expires,
             additional_claims={
                 'name': dupleUser['nickName'],
-                'profile_image':dupleUser.get('profile','')
+                'profile_image':dupleUser.get('profile',''),
+                # 'introduced': dupleUser['hasIntroduce']
             }
         )
         response = jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : access_token})

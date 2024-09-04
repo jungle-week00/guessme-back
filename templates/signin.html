@@ -26,8 +26,10 @@
 
         <!-- 텍스트형태로 되어있는 icon 을 쓸 수 있도록 Font awesome 을 포함합니다. -->
         <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+		<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 
 		<title>니 내 누군지 아니? | Team 06</title>
+
 		<link
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
@@ -41,7 +43,10 @@
 				border-radius: 8px;
 			}
 			.signup-header {
-				text-align: center;
+				position:relative;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				font-size: 1.5rem;
 				margin-bottom: 20px;
 				background-color: #3c8dbc;
@@ -53,6 +58,15 @@
 				margin-left: -20px;
 				margin-top: -20px;
 			}
+
+			.signup-header i {
+				position: absolute;
+				left:15px;
+				font-size: 1.5rem;
+				/* margin-right: 10px;  아이콘과 텍스트 사이의 간격을 설정 */
+				/* margin-left: 0;  아이콘을 왼쪽에 붙이기 위해 왼쪽 여백을 제거 */
+			}
+
 			.textarea {
 				margin-bottom: 20px;
 				resize: none;
@@ -95,6 +109,11 @@
 				});
 			});
 
+			// 뒤로가기 메서드
+			function goBack() {
+                window.history.back();  // 브라우저의 뒤로 가기
+            }
+
 			function submitSignIn() { //로그인 버튼 눌렀을 때
 
 				let id_give = $('#input-id').val();
@@ -122,7 +141,7 @@
 	<body>
 		<div class="signup-container">
 			<!-- 상단 제목 -->
-			<div class="signup-header">로그인</div>
+			<div class="signup-header"><i class="xi-angle-left" onclick="goBack()"></i> 로그인</div>
 
             <!-- 로그인 내용 -->
             <div>
@@ -139,6 +158,7 @@
 			<!-- 로그인 버튼 -->
 			<div class="bottom-buttons">
 				<button class="button is-primary" onclick="submitSignIn()">로그인</button>
+				<a href="{{ url_for('signup') }}"><button class="button is-primary">회원가입</button></a>
 			</div>
 		</div>
 	</body>
