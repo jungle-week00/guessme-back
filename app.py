@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request, render_template, url_for, redirect
 from pymongo import MongoClient
 from flask_jwt_extended import *
 from werkzeug.utils import secure_filename
-import os
+from PIL import Image, ImageFilter
+import os, uuid
 
 import base64, random
 
@@ -62,12 +63,29 @@ def register():
     userPW = request.form['pw']
     # Profile Image
     userProfile = request.files['profile_image']    
-    userProfile.save("static/img")
     
     if userProfile.filename == '':
         return jsonify({'result' : 'failed', 'msg' : '현재 이미지가 비어있습니다. '})
-    file_name = secure_filename(userProfile.filename)
-    userProfile.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    
+    # 고유한 파일 이름 생성
+    filename = str(uuid.uuid4())
+    # origin 이미지와 blur 이미지
+    origin_profile_img = f"{filename}_origin.jpg"
+    blur_profile_img = f"{filename}_blur.jpg"
+    
+    # 원본 저장
+    origin_path = os.path.join(app.config['UPLOAD_FOLDER'], origin_profile_img)
+    userProfile.save(origin_path)
+    
+    # 이미지 열고 블러 처리
+    with Image.open(origin_path) as img:
+        
+        blurred_img = img.rotate(90)
+        blurred_img = img.filter(ImageFilter.GaussianBlur(50))
+        
+        # 블러 이미지 저장
+        blurred_path = os.path.join(app.config['UPLOAD_FOLDER'], blur_profile_img)
+        blurred_img.save(blurred_path)
     
     # nickname
     userNickname = request.form['nickname']
@@ -85,7 +103,7 @@ def register():
     new_userInfo = {
         "id" : userID,
         "pw" : userPW,
-        "profile" : userProfile.filename,
+        "profile" : filename,
         "nickName" : userNickname,
         "hasIntroduce" : False,
         "question1" : "",
