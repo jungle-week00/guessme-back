@@ -169,7 +169,7 @@ def get_nicknames_with_true_value():
     )
     return [nickname['nickName'] for nickname in nicknames]
 
-def get_profile_image_with_true_value():
+def get_profile_image_with_true_value(type):
     temp_profile_image_titles = db.userInfo.find(
         { 'hasIntroduce' : True},
         { 'profile' : 1, '_id' : 0}
@@ -181,7 +181,11 @@ def get_profile_image_with_true_value():
     # Title Text
     for title in profile_images:
         # title 데이터를 가져와서 상대 경로로 images 파일을 가져온다.
-        images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+        # Type이 1이면 Origin / 2면 Blur
+        if type == 1:
+            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+        else :
+            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
     return images_url
 
 # Text 마스킹
