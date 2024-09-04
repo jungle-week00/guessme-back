@@ -233,6 +233,7 @@
 							data: JSON.stringify(postData),
 							success: function (response) {
 								alert('모든 퀴즈와 자기소개가 성공적으로 제출되었습니다!');
+								
 								window.location.reload();
 							},
 							error: function (xhr, status, error) {

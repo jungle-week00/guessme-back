@@ -179,17 +179,35 @@
 
 			// 결과 표시
 			function showResult() {
-				const userName = '홍길동'; // 사용자 이름 (예시)
-				const intro = '저는 열정적인 개발자 홍길동입니다.'; // 자기소개
-				const profileImage = '/path/to/profile.jpg'; // 프로필 이미지 경로 (예시)
+				let userName = '홍길동'; // 사용자 이름 (예시)
+				let intro = '저는 열정적인 개발자 홍길동입니다.'; // 자기소개
+				let profileImage = '/path/to/profile.jpg'; // 프로필 이미지 경로 (예시)
+
+				$.ajax({
+					url: `/api/quiz/result/${userId}`,
+					method: 'GET',
+					dataType: 'json',
+					success: function (data) {
+						userName = data[0]
+						intro = data[2]
+						profileImage = data[1]
+					},
+					error: function (xhr, status, error) {
+						console.error(
+							'퀴즈 데이터를 가져오는 중 오류가 발생했습니다.',
+							error
+						);
+					},
+				});
+
 
 				let resultMessage = '';
 				if (score === 5) {
-					resultMessage = `${score}점! 혹시 저를 알고 계셨나요..?`;
+					resultMessage = '혹시 저를 알고 계셨나요..?';
 				} else if (score === 4) {
-					resultMessage = `${score}점! 저를 잘 파악하고 계시군요!`;
+					resultMessage = '1점이 모자라네요. 아쉬워요!';
 				} else {
-					resultMessage = `${score}점! 우리 더 친해져요!`;
+					resultMessage = '우리 더 친해져요!';
 				}
 
 				// 결과 화면을 동적으로 렌더링
@@ -201,29 +219,23 @@
 					<!-- 결과 멘트 -->
 					<div class="content">
 						<p class="title is-4">${resultMessage}</p>
+						<p class="score">${score}점!</p>
 					</div>
-
-				  <div class="card">
-		<div class="card-image">
-			<figure class="image is-4by3">
-				<img
-					src="https://bulma.io/assets/images/placeholders/1280x960.png"
-					alt="Placeholder image"
-				/>
-			</figure>
-		</div>
-		<div class="card-content">
-			<div class="media">
-				<div class="media-content">
-					<p class="title is-4">${userName}</p>
-				</div>
-			</div>
-
-			<div class="content">
-				${intro}
-			</div>
-		</div>
-	</div>
+		
+					<!-- 프로필 이미지와 인사말 -->
+					<div class="profile-section">
+						<img src="${profileImage}" alt="Profile Picture" />
+						<!-- 프로필 사진 -->
+						<div class="greeting">
+							안녕하세요.<br />
+							${userId}입니다.
+						</div>
+					</div>
+		
+					<!-- 자기소개 -->
+					<div class="intro-section">
+						<p>${intro}</p>
+					</div>
 		
 					<!-- 홈으로 돌아가기 버튼 -->
 					<div class="bottom-buttons" style="text-align: center; margin-top: 20px;">
