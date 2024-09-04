@@ -592,7 +592,6 @@ def get_quiz_result_data(target_id):
     target_user_db = db.userInfo.find_one({'id' : target_id})
     # UserDB에서 User 값을 읽어온다
     target_user_quiz = user_collection.find_one({'user_id' : target_id})
-    print(target_user_quiz['intro'])
     
     # 자기소개 페이지 유저의 이름
     target_user_name = target_user_db['nickName']

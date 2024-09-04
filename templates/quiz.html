@@ -93,8 +93,6 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		<script>
 			let userId = $('#find_id').text(); // 더미 userId, 실제로는 서버에서 받아와야 함
-			console.log(userId);
-
 			let currentQuizIndex = 0;
 			let quizzes = [];
 			let score = 0;
@@ -197,10 +195,52 @@
 					url: `/api/quiz/result/${userId}`,
 					method: 'GET',
 					dataType: 'json',
-					success: function (data) {
-						userName = data[0]
-						intro = data[2]
-						profileImage = data[1]
+					success: function (response) {
+						userName = response['data'][0]
+						profileImage = response['data'][1]
+						intro = response['data'][2]
+
+						let resultMessage = '';
+						if (score === 5) {
+							resultMessage = '혹시 저를 알고 계셨나요..?';
+						} else if (score === 4) {
+							resultMessage = '1점이 모자라네요. 아쉬워요!';
+						} else {
+							resultMessage = '우리 더 친해져요!';
+						}
+		
+						// 결과 화면을 동적으로 렌더링
+						$('body').html(`
+						<div class="wrapper">
+							<!-- 상단 제목 -->
+							<div class="header">최종결과</div>
+				
+							<!-- 결과 멘트 -->
+							<div class="content">
+								<p class="title is-4">${resultMessage}</p>
+								<p class="score">${score}점!</p>
+							</div>
+				
+							<!-- 프로필 이미지와 인사말 -->
+							<div class="profile-section">
+								<img src="${profileImage}" alt="Profile Picture" />
+								<!-- 프로필 사진 -->
+								<div class="greeting">
+									안녕하세요.<br />
+									${userName}입니다.
+								</div>
+							</div>
+				
+							<!-- 자기소개 -->
+							<div class="intro-section">
+								<p>${intro}</p>
+							</div>
+				
+							<!-- 홈으로 돌아가기 버튼 -->
+							<div class="bottom-buttons" style="text-align: center; margin-top: 20px;">
+								<a href="/" class="button is-primary">홈으로 돌아가기</a>
+							</div>
+						</div>`);
 					},
 					error: function (xhr, status, error) {
 						console.error(
@@ -211,48 +251,6 @@
 				});
 
 
-				let resultMessage = '';
-				if (score === 5) {
-					resultMessage = '혹시 저를 알고 계셨나요..?';
-				} else if (score === 4) {
-					resultMessage = '1점이 모자라네요. 아쉬워요!';
-				} else {
-					resultMessage = '우리 더 친해져요!';
-				}
-
-				// 결과 화면을 동적으로 렌더링
-				$('body').html(`
-				<div class="wrapper">
-					<!-- 상단 제목 -->
-					<div class="header">최종결과</div>
-		
-					<!-- 결과 멘트 -->
-					<div class="content">
-						<p class="title is-4">${resultMessage}</p>
-						<p class="score">${score}점!</p>
-					</div>
-		
-					<!-- 프로필 이미지와 인사말 -->
-					<div class="profile-section">
-						<img src="${profileImage}" alt="Profile Picture" />
-						<!-- 프로필 사진 -->
-						<div class="greeting">
-							안녕하세요.<br />
-							${userId}입니다.
-						</div>
-					</div>
-		
-					<!-- 자기소개 -->
-					<div class="intro-section">
-						<p>${intro}</p>
-					</div>
-		
-					<!-- 홈으로 돌아가기 버튼 -->
-					<div class="bottom-buttons" style="text-align: center; margin-top: 20px;">
-						<a href="/" class="button is-primary">홈으로 돌아가기</a>
-					</div>
-				</div>
-			`);
 			}
 		</script>
 	</body>
