@@ -122,7 +122,7 @@
                         data:{},
                         success: function (response){
                             let quizs = response["data"];
-                            for (let i = 0; i < quizs[2].length; i++){
+                            for (let i = 0; i < quizs[1].length; i++){
                                 makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
                             }
                         }
