@@ -371,11 +371,8 @@ def masking(text):
 # 공개된 데이터
 @app.route('/api/public/data', methods=['GET'])
 def publicData():
-    cur_user = get_jwt_identity()
-    if cur_user is None:
-        return jsonify({'result' : 'failed', 'msg' : '유효하지 않은 토큰 값'})
-    
     # 닉네임 List 전달
+    
     nicknames = get_nicknames_with_true_value()
     images_url = get_profile_image_with_true_value(1)
     id_datas = get_id_with_true_value()
@@ -481,11 +478,13 @@ def get_quiz_data(user_id):
 
 @app.route('/quiz/<string:user_id>', methods=['GET'])
 def get_all_quizzes(user_id):
+    
   user = user_collection.find_one({"user_id": user_id})
   if not user:
     return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
 
-  return jsonify(user["quizzes"]), 200
+  #return jsonify(user["quizzes"]), 200
+  return render_template('quiz.html', user = user_id)
 
 @app.route('/quiz/<string:user_id>/<int:quiz_number>', methods=['GET'])
 def get_quiz(user_id, quiz_number):
