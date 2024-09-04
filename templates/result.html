@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>최종결과</title>
+		<link rel="stylesheet" href="../css/style.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+		/>
+		<style>
+			.content {
+				margin-bottom: 30px;
+				text-align: center;
+			}
+			.profile-section {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-top: 30px;
+			}
+			.profile-section img {
+				width: 80px;
+				height: 80px;
+				border-radius: 50%;
+				background-color: #f8f8f8;
+				margin-right: 20px;
+			}
+			.profile-section .greeting {
+				font-size: 1.2rem;
+				font-weight: bold;
+			}
+			.greeting {
+				display: block;
+			}
+			.score {
+				font-size: 1.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<!-- 상단 제목 -->
+			<div class="header">최종결과</div>
+
+			<!-- 결과 멘트 -->
+			<div class="content">
+				<p class="title is-4">혹시 저를 알고 계셨나요..?</p>
+				<p class="score">5점!</p>
+			</div>
+
+			<!-- 프로필 이미지와 인사말 -->
+			<div class="profile-section">
+				<img src="/" alt="Profile Picture" />
+				<!-- 프로필 사진 -->
+				<div class="greeting">
+					안녕하세요.<br />
+					{이름}입니다. <br />
+				</div>
+				<p>{자기소개}</p>
+			</div>
+
+			<div class="result">
+				<div class="result-element">
+					<div>1번 문제</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
