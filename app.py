@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from flask_jwt_extended import *
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageFilter
+from werkzeug.security import generate_password_hash, check_password_hash
 import os, uuid
 
 import base64, random, datetime
@@ -17,6 +18,15 @@ app.config.update(
 )
 
 jwt = JWTManager(app)
+
+### Function 
+
+# PW 해싱
+def hash_password(password):
+    return generate_password_hash(password)
+
+def verify_password(hashed_password, password):
+    return check_password_hash(hashed_password, password)
 
 ### Page Container
 
@@ -80,8 +90,16 @@ def showIntroduce():
 def register():
     # ID
     userID = request.form['id']
+    if len(userID) < 4:
+        return jsonify({'result' : 'failed', 'msg' : 'ID를 4글자 이상 작성해주세요.'})
+    
     # PW
     userPW = request.form['pw']
+    if len(userPW) < 12:
+        return jsonify({'result' : 'failed', 'msg' : 'PW를 12글자 이상 작성해주세요.'})
+    
+    hashed_pw = hash_password(userPW)
+    
     # Profile Image
     userProfile = request.files['profile_image']    
     
@@ -123,7 +141,7 @@ def register():
     
     new_userInfo = {
         "id" : userID,
-        "pw" : userPW,
+        "pw" : hashed_pw,
         "profile" : filename,
         "nickName" : userNickname,
         "hasIntroduce" : False,
@@ -159,17 +177,19 @@ def login():
     userPw = request.form['pw']
     
     # DB에 있는 데이터와 비교하기
-    dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
-    if dupleUser:
+    user = db.userInfo.find_one({'id' : userId})
+    if user:
+        if not verify_password(user['pw'], userPw):
+            return jsonify({'result' : 'failed', 'msg' : '로그인이 실패했습니다.'})
+        
         # JWT 토큰 생성 (유효시간 60분)
         expires = datetime.timedelta(minutes=60)
         access_token = create_access_token(
             identity = userId, 
             expires_delta = expires,
             additional_claims={
-                'name': dupleUser['nickName'],
-                'profile_image':dupleUser.get('profile',''),
-                # 'introduced': dupleUser['hasIntroduce']
+                'name': user['nickName'],
+                'profile_image':user.get('profile','')
             }
         )
         response = jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : access_token})
@@ -208,8 +228,9 @@ def privateData():
         masking_nickanmes.append(masking(name))
     
     data.append(masking_nickanmes)
-    profile_images_url = get_profile_image_with_true_value()
+    profile_images_url = get_profile_image_with_true_value(0)
     data.append(profile_images_url)
+    
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
@@ -235,10 +256,17 @@ def get_profile_image_with_true_value(type):
         # title 데이터를 가져와서 상대 경로로 images 파일을 가져온다.
         # Type이 1이면 Origin / 2면 Blur
         if type == 1:
-            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+            images_url.append(list({ url_for('static', filename='uploads/{}_origin.jpg'.format(title)) }))
         else :
-            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+            images_url.append(list({ url_for('static', filename='uploads/{}_blur.jpg'.format(title)) }))
     return images_url
+
+def get_id_with_true_value():
+    ids = db.userInfo.find(
+        { 'hasIntroduce' : True},
+        { 'id' : 1, '_id' : 0}
+    )
+    return [id['id'] for id in ids]
 
 # Text 마스킹
 def masking(text):
@@ -256,11 +284,13 @@ def publicData():
     
     # 닉네임 List 전달
     nicknames = get_nicknames_with_true_value()
-    images_url = get_profile_image_with_true_value()
+    images_url = get_profile_image_with_true_value(1)
+    id_datas = get_id_with_true_value()
     
     data = []
     data.append(nicknames)
     data.append(images_url)
+    data.append(id_datas)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
 
@@ -305,7 +335,6 @@ def addQuestion5():
 @app.route('/api/addIntroduce')
 def addIntroduce():
     return 'Add Introduce'
-
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
