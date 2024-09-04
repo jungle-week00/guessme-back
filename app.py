@@ -1,12 +1,17 @@
-from flask import Flask, jsonify
-from flask import request
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
+from flask_jwt_extended import *
+
 import base64, random
 
 client = MongoClient('localhost', 27017)
 db = client.users
 
 app = Flask(__name__)
+app.config.update(
+    JWT_SECRET_KEY = "TEST"
+)
+jwt = JWTManager(app)
 
 
 ### Page Container
@@ -110,7 +115,7 @@ def login():
     # DB에 있는 데이터와 비교하기
     dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
     if dupleUser:
-        return jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.'})
+        return jsonify({'result' : 'success', 'msg' : '정상적으로 로그인이 되었습니다.', "token" : create_access_token(identity = userId, expires_delta=60)})
     else:
         return jsonify({'result' : 'failed', 'msg' : '로그인이 실패했습니다.'})
 
@@ -124,9 +129,9 @@ def privateData():
     for name in nicknames:
         masking_nickanmes.append(masking(name))
         
-    print(masking_nickanmes)
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'nicknames' : masking_nickanmes})
 
+# 자기소개 페이지가 존재하는 사람들의 이름을 관리
 def get_nicknames_with_true_value():
     nicknames = db.userInfo.find(
         { 'hasIntroduce' : True},
@@ -142,12 +147,15 @@ def masking(text):
 
 # 공개된 데이터
 @app.route('/api/public/data', methods=['GET'])
+@jwt_required()
 def publicData():
+    cur_user = get_jwt_identity()
+    if cur_user is None:
+        return jsonify({'result' : 'failed', 'msg' : '유효하지 않은 토큰 값'})
     
     # 닉네임 List 전달
     nicknames = get_nicknames_with_true_value()
-    
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'nicknames' : nicknames})
 
 # 랜덤 유저 전달
 @app.route('/api/randUser', methods=['GET'])
@@ -158,9 +166,8 @@ def randUser():
     # 난수 추출
     random_nickname = random.choice(nicknames)
     random_user_id = db.userInfo.find_one({'nickName' : random_nickname}, {'_id' : 0})['id']
-    print(random_user_id)
     
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.'})
+    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'id' : random_user_id})
 
 # 일반 질문 1
 @app.route('/api/addQuestion/1')
