@@ -63,7 +63,7 @@
             //페이지 로딩 시 showQuiz() 호출.
             $(document).ready(function () {
                 // 쿠키에서 'logged_in' 값 가져오기
-                let token = getCookie("your_token_cookie_name");  // 쿠키 이름에 맞게 수정 필요
+                let token = getCookie("access_token"); 
                 let logged_in = false;
 
                 if (token) {
@@ -190,7 +190,8 @@
             <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;" >
                 <div class="hero-body button-section">
                     <h1 >안녕하세요, {{name}} 님!</h1>
-                    <button class="button is-white is-large">자기소개 만들기</button>
+                    <a href="{{url_for('introduceEdit')}}">
+                    <button class="button is-white is-large">자기소개 만들기</button></a>
                     <button class="button is-white is-large" style="margin-top: 10px;" >랜덤 맞추기!</button>
                 </div>
             </section>

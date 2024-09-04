@@ -45,6 +45,7 @@ def home():
         try:
             decoded_token = decode_token(token)
             identity = decoded_token['sub'] # JWT에서 identity 추출
+            id = decoded_token.get('id','')
             name = decoded_token.get('name','')
             profile_image = decoded_token.get('profile_image', '')
             # introduced = decoded_token.get('introduced','')
@@ -69,7 +70,28 @@ def signup():
 # 자기소개 입력 페이지
 @app.route('/introduce/edit')
 def introduceEdit():
-    return 'Introduce Edit'
+    # 쿠키에서 JWT 토큰 가져오기
+    token = request.cookies.get('access_token')
+
+    name = ''
+    profile_image = ''
+    logged_in = False
+    
+    if token:
+        # 토큰이 유효한지 확인
+        try:
+            decoded_token = decode_token(token)
+            identity = decoded_token['sub'] # JWT에서 identity 추출
+            id1 = decoded_token.get('id1','')
+            name = decoded_token.get('name','')
+            profile_image = decoded_token.get('profile_image', '')
+            # introduced = decoded_token.get('introduced','')
+            logged_in = True
+        except Exception as e:
+            logged_in = False
+    else:
+        logged_in = False
+    return render_template('quiz-form.html', logged_in=logged_in, name=name, profile_image=profile_image, id=id1)
 
 # 자기소개 결과 페이지
 @app.route('/introduce/result')
@@ -188,6 +210,7 @@ def login():
             identity = userId, 
             expires_delta = expires,
             additional_claims={
+                'id1': userId,
                 'name': user['nickName'],
                 'profile_image':user.get('profile',''),
                 # 'introduced': dupleUser['hasIntroduce']
@@ -322,14 +345,15 @@ def intro_form():
   return render_template('intro-form.html')
 # api 
 client = MongoClient('localhost', 27017)
-db = client.quizdb
-user_collection = db.userdb
+quiz_db = client.quizdb
+user_collection = quiz_db.userdb
 
 # 자기소개 생성
 @app.route('/api/submit_intro/<string:user_id>', methods=['POST'])
 def submit_intro(user_id):
     data = request.get_json()
 
+    print(user_id)
     # 자기소개 데이터가 있는지 확인
     quizzes = data.get("quizzes")
     intro = data.get("intro")
@@ -358,6 +382,11 @@ def submit_intro(user_id):
                 "intro": intro
             }}
         )
+
+    print(user_id)
+    # getUser = db.userInfo.find_one({'id' : user_id})
+    # print(getUser['hasIntroduce'])
+    # getUser['hasIntroduce'] = True
 
     return jsonify({'result': 'success'}), 201
 
