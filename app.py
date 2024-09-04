@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from flask_jwt_extended import *
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageFilter
+from werkzeug.security import generate_password_hash, check_password_hash
 import os, uuid
 
 import base64, random, datetime
@@ -17,6 +18,15 @@ app.config.update(
 )
 
 jwt = JWTManager(app)
+
+### Function 
+
+# PW 해싱
+def hash_password(password):
+    return generate_password_hash(password)
+
+def verify_password(hashed_password, password):
+    return check_password_hash(hashed_password, password)
 
 ### Page Container
 
@@ -79,8 +89,16 @@ def showIntroduce():
 def register():
     # ID
     userID = request.form['id']
+    if len(userID) < 4:
+        return jsonify({'result' : 'failed', 'msg' : 'ID를 4글자 이상 작성해주세요.'})
+    
     # PW
     userPW = request.form['pw']
+    if len(userPW) < 12:
+        return jsonify({'result' : 'failed', 'msg' : 'PW를 12글자 이상 작성해주세요.'})
+    
+    hashed_pw = hash_password(userPW)
+    
     # Profile Image
     userProfile = request.files['profile_image']    
     
@@ -122,7 +140,7 @@ def register():
     
     new_userInfo = {
         "id" : userID,
-        "pw" : userPW,
+        "pw" : hashed_pw,
         "profile" : filename,
         "nickName" : userNickname,
         "hasIntroduce" : False,
@@ -156,6 +174,7 @@ def register():
 def login():
     userId = request.form['id']
     userPw = request.form['pw']
+    hash_pw = hash_password(userPw)
     
     # DB에 있는 데이터와 비교하기
     dupleUser = db.userInfo.find_one({'id' : userId, "pw" : userPw})
@@ -195,7 +214,7 @@ def privateData():
         masking_nickanmes.append(masking(name))
     
     data.append(masking_nickanmes)
-    profile_images_url = get_profile_image_with_true_value()
+    profile_images_url = get_profile_image_with_true_value(0)
     data.append(profile_images_url)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
@@ -222,9 +241,9 @@ def get_profile_image_with_true_value(type):
         # title 데이터를 가져와서 상대 경로로 images 파일을 가져온다.
         # Type이 1이면 Origin / 2면 Blur
         if type == 1:
-            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+            images_url.append(list({ url_for('static', filename='uploads/{}_origin.jpg'.format(title)) }))
         else :
-            images_url.append(list({ url_for('static', filename='uploads/{}'.format(title)) }))
+            images_url.append(list({ url_for('static', filename='uploads/{}_blur.jpg'.format(title)) }))
     return images_url
 
 # Text 마스킹
@@ -243,7 +262,7 @@ def publicData():
     
     # 닉네임 List 전달
     nicknames = get_nicknames_with_true_value()
-    images_url = get_profile_image_with_true_value()
+    images_url = get_profile_image_with_true_value(1)
     
     data = []
     data.append(nicknames)
