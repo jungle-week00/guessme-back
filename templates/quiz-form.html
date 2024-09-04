@@ -4,33 +4,14 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>MBTI Quiz</title>
+		<link rel="stylesheet" href="/static/css/style.css" />
 		<link
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
 		/>
 		<style>
-			.quiz-container {
-				max-width: 500px;
-				margin: 50px auto;
-				padding: 20px;
-				border: 1px solid #ccc;
-				border-radius: 8px;
-			}
-			.quiz-header {
-				text-align: center;
-				font-size: 1.5rem;
-				margin-bottom: 20px;
-				background-color: #3c8dbc;
-				padding: 15px;
-				border-bottom: 2px solid #004a99;
-				color: white;
-				border-radius: 8px 8px 0 0;
-				width: calc(100% + 40px);
-				margin-left: -20px;
-				margin-top: -20px;
-			}
 			.question {
-				font-size: 1.25rem; /* 질문 크기 확대 */
+				font-size: 1.25rem;
 				font-weight: bold;
 				margin-bottom: 20px;
 				text-align: center;
@@ -39,61 +20,182 @@
 				margin-bottom: 20px;
 				resize: none;
 			}
-			.answer-buttons {
+			.answer-input {
 				display: grid;
-				grid-template-columns: 1fr 1fr; /* 2열 배치 */
 				gap: 10px;
 				margin-bottom: 20px;
+			}
+			.answer-input > input {
+				margin-bottom: 5px;
+			}
+			.question-input {
+				margin-bottom: 30px;
 			}
 			.bottom-buttons {
 				text-align: center;
 			}
 			.is-selected {
-				background-color: #209cee; /* Bulma의 is-info 색상 */
+				background-color: #209cee;
 				color: white;
+			}
+			.progress-status {
+				text-align: center;
+				margin-bottom: 10px;
+				font-weight: bold;
+				font-size: 1.1rem;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="quiz-container">
+		<div class="wrapper">
 			<!-- 상단 제목 -->
-			<div class="quiz-header">자기소개 입력</div>
+			<div class="header">자기소개 퀴즈 입력</div>
+
+			<!-- 진행 상황 -->
+			<div id="progress-status" class="progress-status">1/6</div>
 
 			<!-- 프로그레스바 -->
-			<progress class="progress is-info" value="20" max="100">20%</progress>
+			<progress id="progress-bar" class="progress is-info" value="16" max="100">
+				16%
+			</progress>
 
 			<!-- 질문 -->
-			<div class="question">당신의 MBTI는 무엇인가요?</div>
-
-			<!-- 설명 입력란 -->
-			<textarea class="textarea" placeholder="간단한 설명(선택)"></textarea>
-
-			<!-- 보기 버튼 (2*3 배열) -->
-			<div class="answer-buttons">
-				<button class="button" onclick="selectAnswer(this)">보기 1</button>
-				<button class="button" onclick="selectAnswer(this)">보기 2</button>
-				<button class="button" onclick="selectAnswer(this)">보기 3</button>
-				<button class="button" onclick="selectAnswer(this)">보기 4</button>
-				<button class="button" onclick="selectAnswer(this)">보기 5</button>
+			<div class="question-input">
+				<input
+					id="question"
+					class="input is-rounded"
+					type="text"
+					placeholder="문제를 작성해주세요."
+				/>
 			</div>
 
-			<!-- 다음 버튼 -->
+			<div class="answer-input">
+				<input
+					id="correct-answer"
+					class="input is-rounded correct-answer"
+					type="text"
+					placeholder="정답"
+				/>
+				<input
+					id="wrong-answer-1"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기2"
+				/>
+				<input
+					id="wrong-answer-2"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기3"
+				/>
+				<input
+					id="wrong-answer-3"
+					class="input is-rounded"
+					type="text"
+					placeholder="보기4"
+				/>
+			</div>
+
+			<!-- 자기소개 섹션 (처음에는 숨김) -->
+			<div id="intro-section" style="display: none">
+				<h2 class="subtitle">자기소개</h2>
+				<textarea
+					id="intro-text"
+					class="textarea"
+					placeholder="자기소개를 입력하세요..."
+				></textarea>
+			</div>
+
+			<!-- 다음 또는 생성 버튼 -->
 			<div class="bottom-buttons">
-				<button class="button is-primary">다음</button>
+				<button id="action-button" class="button is-primary">다음</button>
 			</div>
 		</div>
 
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		<script>
-			function selectAnswer(button) {
-				// 모든 버튼에서 is-selected 클래스 제거
-				const buttons = document.querySelectorAll('.answer-buttons .button');
-				buttons.forEach((btn) =>
-					btn.classList.remove('is-selected', 'is-info')
-				);
+			$(document).ready(function () {
+				const progressBar = $('#progress-bar');
+				const progressStatus = $('#progress-status');
+				const actionButton = $('#action-button');
+				let quizNumber = 1; // 초기 퀴즈 번호 설정
+				let quizzes = []; // 퀴즈들을 저장할 배열
+				let totalSteps = 6; // 5개의 퀴즈 + 1개의 자기소개
 
-				// 클릭한 버튼에 is-selected 및 is-info 클래스 추가
-				button.classList.add('is-selected', 'is-info');
-			}
+				// 초기값: 1/6으로 설정
+				function updateProgress() {
+					const progressPercentage = (quizNumber / totalSteps) * 100;
+					progressBar.val(progressPercentage);
+					progressStatus.text(`${quizNumber}/6`);
+				}
+
+				updateProgress(); // 초기 업데이트
+
+				$('#action-button').click(function () {
+					if (quizNumber <= 5) {
+						// 퀴즈 입력 처리
+						const question = $('#question').val();
+						const correctAnswer = $('#correct-answer').val();
+						const wrongAnswer1 = $('#wrong-answer-1').val();
+						const wrongAnswer2 = $('#wrong-answer-2').val();
+						const wrongAnswer3 = $('#wrong-answer-3').val();
+
+						const quizData = {
+							number: quizNumber,
+							title: question,
+							answer: {
+								correct: correctAnswer,
+								wrong: [wrongAnswer1, wrongAnswer2, wrongAnswer3],
+							},
+						};
+
+						quizzes.push(quizData);
+
+						// 입력 필드 초기화
+						$('#question').val('');
+						$('#correct-answer').val('');
+						$('#wrong-answer-1').val('');
+						$('#wrong-answer-2').val('');
+						$('#wrong-answer-3').val('');
+
+						// 프로그레스바 업데이트
+						quizNumber++;
+						updateProgress();
+
+						if (quizNumber === 6) {
+							// 마지막 자기소개로 이동
+							$('.question-input, .answer-input').hide();
+							$('#intro-section').show();
+							actionButton.text('생성');
+						}
+					} else {
+						// 자기소개 입력 처리 및 서버로 데이터 전송
+						const introText = $('#intro-text').val();
+						const userId = '3'; // 실제 사용자 ID를 여기에서 설정
+
+						const postData = {
+							user_id: userId,
+							quizzes: quizzes,
+							intro: introText, // 자기소개 추가
+						};
+
+						$.ajax({
+							url: `/api/submit_intro/${userId}`,
+							method: 'POST',
+							contentType: 'application/json',
+							data: JSON.stringify(postData),
+							success: function (response) {
+								alert('모든 퀴즈와 자기소개가 성공적으로 제출되었습니다!');
+								window.location.reload();
+							},
+							error: function (xhr, status, error) {
+								alert('제출에 실패했습니다.');
+								console.error('Error:', error);
+							},
+						});
+					}
+				});
+			});
 		</script>
 	</body>
 </html>

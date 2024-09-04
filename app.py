@@ -307,35 +307,121 @@ def randUser():
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'id' : random_user_id})
 
-# 일반 질문 1
-@app.route('/api/addQuestion/1')
-def addQuestion1():
-    return 'AddQuestion'
+### (2024-09-04) 20:00 // 박수호님 코드
 
-# 일반 질문 2
-@app.route('/api/addQuestion/2')
-def addQuestion2():
-    return 'Add Question 2'
+@app.route('/quiz')
+def quiz():
+  return render_template('quiz.html')
 
-# 일반 질문 3
-@app.route('/api/addQuestion/3')
-def addQuestion3():
-    return 'Add Question 3'
+@app.route('/quizform')
+def quiz_form():
+  return render_template('quiz-form.html')
 
-# 일반 질문 4
-@app.route('/api/addQeustion/4')
-def addQuestion4():
-    return 'Add Question 4'
+@app.route('/introform')
+def intro_form():
+  return render_template('intro-form.html')
+# api 
+client = MongoClient('localhost', 27017)
+db = client.quizdb
+user_collection = db.userdb
 
-# 일반 질문 5
-@app.route('/api/addQuestion/5')
-def addQuestion5():
-    return 'Add Question 5'
+# 자기소개 생성
+@app.route('/api/submit_intro/<string:user_id>', methods=['POST'])
+def submit_intro(user_id):
+    data = request.get_json()
 
-# 자기소개 입력
-@app.route('/api/addIntroduce')
-def addIntroduce():
-    return 'Add Introduce'
+    # 자기소개 데이터가 있는지 확인
+    quizzes = data.get("quizzes")
+    intro = data.get("intro")
+
+    # 데이터 검증
+    if not quizzes or len(quizzes) != 5:
+        return jsonify({"message": "5개의 퀴즈를 보내야 합니다."}), 400
+    if not intro:
+        return jsonify({"message": "자기소개가 필요합니다."}), 400
+
+    user = user_collection.find_one({"user_id": user_id})
+
+    if not user:
+        # 새 사용자와 퀴즈 목록 및 자기소개 삽입
+        user_collection.insert_one({
+            "user_id": user_id,
+            "quizzes": quizzes,
+            "intro": intro
+        })
+    else:
+        # 기존 사용자의 퀴즈와 자기소개 업데이트
+        user_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {
+                "quizzes": quizzes,
+                "intro": intro
+            }}
+        )
+
+    return jsonify({'result': 'success'}), 201
+
+
+# 퀴즈 불러오기
+@app.route('/api/quiz/<string:user_id>', methods=['GET'])
+def get_quiz_data(user_id):
+    # 사용자의 퀴즈 데이터를 MongoDB에서 찾음
+    user = user_collection.find_one({"user_id": user_id})
+    if not user or "quizzes" not in user:
+        return jsonify({"message": "유저 또는 퀴즈를 찾을 수 없습니다."}), 404
+    
+    # 퀴즈 데이터를 가져오고 문제의 정답과 오답을 섞음
+    quiz_data = user["quizzes"][:5]  # 5개의 퀴즈만 가져옴
+    for quiz in quiz_data:
+        options = quiz['answer']['wrong'] + [quiz['answer']['correct']]
+        random.shuffle(options)  # 정답과 오답을 랜덤하게 섞음
+        quiz['shuffled_options'] = options
+
+    return jsonify(quiz_data), 200
+
+@app.route('/quiz/<string:user_id>', methods=['GET'])
+def get_all_quizzes(user_id):
+  user = user_collection.find_one({"user_id": user_id})
+  if not user:
+    return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
+
+  return jsonify(user["quizzes"]), 200
+
+@app.route('/quiz/<string:user_id>/<int:quiz_number>', methods=['GET'])
+def get_quiz(user_id, quiz_number):
+  user = user_collection.find_one({"user_id": user_id})
+  
+  if not user:
+    return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
+  
+  quiz = next((q for q in user["quizzes"] if q["number"] == quiz_number), None)
+  if not quiz:
+    return jsonify({"message": "퀴즈를 찾을 수 없습니다."}), 404
+  
+  return jsonify(quiz), 200
+
+@app.route('/api/quiz/<string:user_id>/<int:quiz_number>', methods=['PUT'])
+def update_quiz(user_id, quiz_number):
+    data = request.get_json()
+    user = user_collection.find_one({"user_id": user_id})
+
+    if not user:
+        return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
+    
+    quizzes = user.get("quizzes", [])
+    quiz_index = next((i for i, q in enumerate(quizzes) if q["number"] == quiz_number), None)
+
+    if quiz_index is None:
+        return jsonify({"message": "퀴즈를 찾을 수 없습니다."}), 404
+
+    # 퀴즈 업데이트
+    quizzes[quiz_index] = data
+    user_collection.update_one(
+        {"user_id": user_id},
+        {"$set": {"quizzes": quizzes}}
+    )
+
+    return jsonify({"message": "퀴즈가 업데이트되었습니다."}), 200
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

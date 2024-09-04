@@ -1,0 +1,21 @@
+.wrapper {
+	max-width: 500px; /* 퀴즈 페이지와 동일한 폭 */
+	margin: 50px auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+}
+
+.header {
+	text-align: center;
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+	background-color: #3c8dbc;
+	padding: 15px;
+	border-bottom: 2px solid #004a99;
+	color: white;
+	border-radius: 8px 8px 0 0;
+	width: calc(100% + 40px);
+	margin-left: -20px;
+	margin-top: -20px;
+}
