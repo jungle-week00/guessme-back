@@ -524,24 +524,25 @@ def submit_intro(user_id):
 # 퀴즈 불러오기
 @app.route('/api/quiz/<string:user_id>', methods=['GET'])
 def get_quiz_data(user_id):
+    print(user_id)
     # 사용자의 퀴즈 데이터를 MongoDB에서 찾음
-    user = user_collection.find_one({"user_id": user_id})
-    if not user or "quizzes" not in user:
+    quiz_user = user_collection.find_one({'user_id': user_id})
+    
+    if not quiz_user or "quizzes" not in quiz_user:
         return jsonify({"message": "유저 또는 퀴즈를 찾을 수 없습니다."}), 404
     
     # 퀴즈 데이터를 가져오고 문제의 정답과 오답을 섞음
-    quiz_data = user["quizzes"][:5]  # 5개의 퀴즈만 가져옴
+    quiz_data = quiz_user["quizzes"][:5]  # 5개의 퀴즈만 가져옴
     for quiz in quiz_data:
         options = quiz['answer']['wrong'] + [quiz['answer']['correct']]
         random.shuffle(options)  # 정답과 오답을 랜덤하게 섞음
         quiz['shuffled_options'] = options
-
     return jsonify(quiz_data), 200
 
 @app.route('/quiz/<string:user_id>', methods=['GET'])
 def get_all_quizzes(user_id):
-    user = user_collection.find_one({"user_id": user_id})
-    if not user:
+    quiz_user = user_collection.find_one({"user_id": user_id})
+    if not quiz_user:
         return jsonify({"message": "유저를 찾을 수 없습니다."}), 404
 
     # 퀴즈 데이터를 quiz.html로 넘겨 렌더링
@@ -583,6 +584,29 @@ def update_quiz(user_id, quiz_number):
     )
 
     return jsonify({"message": "퀴즈가 업데이트되었습니다."}), 200
+
+# 마지막 Result Page에서 결과값을 가져오는 함수
+@app.route('/api/quiz/result/<string:target_id>', methods=['GET'])
+def get_quiz_result_data(target_id):
+    # UserInfo에서 User 값을 읽어온다
+    target_user_db = db.userInfo.find_one({'id' : target_id})
+    # UserDB에서 User 값을 읽어온다
+    target_user_quiz = user_collection.find_one({'user_id' : target_id})
+    
+    # 자기소개 페이지 유저의 이름
+    target_user_name = target_user_db['nickName']
+    # 자기소개 페이지 유저의 프로필 이미지
+    target_user_profile_img_title = target_user_db['profile']
+    target_user_profile_img = url_for('static', filename='uploads/{}_origin.jpg'.format(target_user_profile_img_title))
+    # 자기소개 페이지 유저의 자기소개 텍스트
+    target_user_introduce_text = target_user_quiz['intro']
+    
+    data = []
+    data.append(target_user_name)
+    data.append(target_user_profile_img)
+    data.append(target_user_introduce_text)
+    
+    return jsonify({'Message' : '정상적으로 데이터가 전달되었습니다.', 'data' : data}), 200
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

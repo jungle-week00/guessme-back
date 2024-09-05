@@ -1,173 +1,179 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <!-- 다양한 언어를 사용할 수 있도록 UTF-8 을 사용하도록 합니다. -->
-        <meta charset="UTF-8"/>
 
-        <!-- 반응형으로 동작하게 합니다. -->
-        <meta title="viewport" content="width=device-width, initial-scale=1.0"/>
+<head>
+    <!-- 다양한 언어를 사용할 수 있도록 UTF-8 을 사용하도록 합니다. -->
+    <meta charset="UTF-8" />
 
-        <!-- jQuery 를 포함합니다. -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" 
-        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" 
+    <!-- 반응형으로 동작하게 합니다. -->
+    <meta title="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- jQuery 를 포함합니다. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        <!-- CSS library 인 Bulma 를 포함합니다. -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- CSS library 인 Bulma 를 포함합니다. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
 
-        <!-- 텍스트형태로 되어있는 icon 을 쓸 수 있도록 Font awesome 을 포함합니다. -->
-        <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
-        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
+    <!-- 텍스트형태로 되어있는 icon 을 쓸 수 있도록 Font awesome 을 포함합니다. -->
+    <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 
-        <a href="/"><title>니 내 누군지 아니? | Team 06</title></a>
+    <a href="/">
+        <title>니 내 누군지 아니? | Team 06</title>
+    </a>
 
-        <!-- 이 HTML 안에서 사용할 CSS 를 정의합니다. -->
-        <style>
-            .wrapper {
-                max-width: 900px; /* 퀴즈 페이지와 동일한 폭 */
-                margin: 50px auto;
-                padding: 20px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
+    <!-- 이 HTML 안에서 사용할 CSS 를 정의합니다. -->
+    <style>
+        .wrapper {
+            max-width: 1000px;
+            /* 퀴즈 페이지와 동일한 폭 */
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .wrap {
+            margin: auto;
+            width: 50%;
+            max-width: 900px;
+        }
+
+        #qlist {
+            margin: auto;
+            max-width: 900px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .quiz-title {
+            font-weight: bolder;
+            font-size: 20px;
+        }
+
+        .button-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 가로 중앙 정렬 */
+            text-align: center;
+            /* 텍스트 중앙 정렬 */
+            margin-top: 10px;
+        }
+
+        .imgsizefix {
+            width: 200px;
+        }
+    </style>
+
+    <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
+    <script>
+
+        let page_id = ""
+        let page_introduce = ""
+
+        //페이지 로딩 시 showQuiz() 호출.
+        $(document).ready(function () {
+
+            // 쿠키에서 'logged_in' 값 가져오기
+            let token = getCookie("access_token");
+            let logged_in = false;
+
+            if (token) {
+                // 여기에서 토큰의 유효성을 확인하거나 단순히 존재 여부에 따라 설정할 수 있음
+                logged_in = true;
             }
-            .wrap {
-                margin: auto;
-                width: 50%;
-                max-width: 900px;
+            showQuiz(logged_in);
+
+            page_id = $('#page_id').text();
+            page_introduce = $('#page_introduce').text();
+            console.log(page_id);
+            console.log(page_introduce);
+
+            if (page_introduce == "True") {
+                createToEdit();
             }
 
-            #qlist {
-                margin: auto;
-                max-width: 900px;
+            else {
+                editToCreate();
             }
+        });
 
-            .center {
-                text-align: center;
+        //자기소개 만들기 버튼을 자기소개 수정 버튼으로
+        function createToEdit() {
+            $('#createButton').hide();
+            $('#editButton').show();
+        }
+
+        //자기소개 수정 버튼을 자기소개 만들기 버튼으로
+        function editToCreate() {
+            $('#editButton').hide();
+            $('#createButton').show();
+        }
+
+        //자기소개 만들기 버튼인지, 수정 버튼인지
+        function isCreateButton() {
+            btn = $('#createButton');
+            if (btn.text() == "자기소개 수정") {
+                return false;
             }
-
-            .quiz-title{
-                font-weight: bolder;
-                font-size:20px;
+            else {
+                return true;
             }
+        }
 
-            .button-section{
-                display: flex;
-                flex-direction: column;
-                align-items: center; /* 가로 중앙 정렬 */
-                text-align: center; /* 텍스트 중앙 정렬 */
-                margin-top: 10px;
+        function RedirectIntro() {
+            if (isCreateButton() == true) {
+                window.location.href = '/introduce/edit';
             }
+        }
 
-            .imgsizefix{
-                width:200px;
-            }
+        // 쿠키 값을 가져오는 함수
+        function getCookie(name) {
+            let value = "; " + document.cookie;
+            let parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
 
-        </style>
-
-        <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
-        <script>
-
-           let page_id = ""
-           let page_introduce = ""
-
-            //페이지 로딩 시 showQuiz() 호출.
-            $(document).ready(function () {
-
-                // 쿠키에서 'logged_in' 값 가져오기
-                let token = getCookie("access_token"); 
-                let logged_in = false;
-
-                if (token) {
-                    // 여기에서 토큰의 유효성을 확인하거나 단순히 존재 여부에 따라 설정할 수 있음
-                    logged_in = true;
-                }
-                showQuiz(logged_in);
-
-                page_id = $('#page_id').text();
-                page_introduce= $('#page_introduce').text();
-                console.log(page_id);
-                console.log(page_introduce);
-
-                if (page_introduce == "True"){
-                    createToEdit();
-                }
-
-                else{
-                    editToCreate();
+        function logout() {
+            $.ajax({
+                type: 'POST',
+                url: '/api/logout',
+                success: function (response) {
+                    alert(response.msg);
+                    window.location.href = '/';
+                },
+                error: function (xhr) {
+                    alert('로그아웃 실패: ' + xhr.statusText);
                 }
             });
+        }
 
-            //자기소개 만들기 버튼을 자기소개 수정 버튼으로
-            function createToEdit(){
-                $('#createButton').hide();
-                $('#editButton').show();
-            }
-
-            //자기소개 수정 버튼을 자기소개 만들기 버튼으로
-            function editToCreate() {
-                $('#editButton').hide();
-                $('#createButton').show();
-            }
-
-            //자기소개 만들기 버튼인지, 수정 버튼인지
-            function isCreateButton() {
-                btn = $('#createButton');
-                if (btn.text() == "자기소개 수정")
-                {
-                    return false;
-                } 
-                else{
-                    return true;
+        function handleClickCard(id) {
+            // 해당 id에 맞는 퀴즈 데이터 요청 및 페이지 이동
+            $.ajax({
+                type: "GET",
+                url: `/quiz/${id}`,  // API 엔드포인트 호출
+                success: function (response) {
+                    // 성공적으로 데이터를 불러왔을 때 퀴즈 페이지로 이동
+                    window.location.href = `/quiz/${id}`;
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching quiz:", error);
+                    alert("퀴즈를 불러오는 데 실패했습니다.");
                 }
-            }
-
-            function RedirectIntro(){
-                if (isCreateButton() == true){
-                    window.location.href = '/introduce/edit';
-                }
-            }
-
-            // 쿠키 값을 가져오는 함수
-            function getCookie(name) {
-                let value = "; " + document.cookie;
-                let parts = value.split("; " + name + "=");
-                if (parts.length === 2) return parts.pop().split(";").shift();
-            }
-
-            function logout() {
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/logout',
-                    success: function(response) {
-                        alert(response.msg);
-                        window.location.href = '/';
-                    },
-                    error: function(xhr) {
-                        alert('로그아웃 실패: ' + xhr.statusText);
-                    }
-                });
-            }
-
-            function handleClickCard(id) {
-                // 해당 id에 맞는 퀴즈 데이터 요청 및 페이지 이동
-                $.ajax({
-                    type: "GET",
-                    url: `/quiz/${id}`,  // API 엔드포인트 호출
-                    success: function(response) {
-                        // 성공적으로 데이터를 불러왔을 때 퀴즈 페이지로 이동
-                        window.location.href = `/quiz/${id}`;
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error fetching quiz:", error);
-                        alert("퀴즈를 불러오는 데 실패했습니다.");
-                    }
-                });
-            }
+            });
+        }
 
 
-            function makeCard(id, profile_image, name) {
-                // 각 퀴즈 유저의 id 태그를 가져와 카드마다 적용
-                let temp_html = `<div class="column is-one-third">
+        function makeCard(id, profile_image, name) {
+            // 각 퀴즈 유저의 id 태그를 가져와 카드마다 적용
+            let temp_html = `<div class="column is-one-third">
                                     <div class="card">
                                         <div class="card-image" id="${id}">
                                             <img src="${profile_image}" alt="Profile Photo"/>
@@ -178,57 +184,57 @@
                                     </div>
                                 </div>`;
 
-                $("#qlist").append(temp_html);
+            $("#qlist").append(temp_html);
 
-                // 카드 클릭 시 해당 유저의 퀴즈 페이지로 이동
-                $(`#${id}`).closest('.card').on('click', function() {
-                    handleClickCard(id);
-                });
+            // 카드 클릭 시 해당 유저의 퀴즈 페이지로 이동
+            $(`#${id}`).closest('.card').on('click', function () {
+                handleClickCard(id);
+            });
+        }
+
+
+        function showQuiz(logged_in) { //api 통해 내용 받아 카드들 내려주는 함수
+            $('#qlist').html("");
+
+            if (logged_in == true) {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/public/data",
+                    data: {},
+                    success: function (response) {
+                        let quizs = response["data"];
+                        for (let i = 0; i < quizs[2].length; i++) {
+                            makeCard(quizs[2][i], quizs[1][i], quizs[0][i])
+                        }
+                    }
+                })
             }
 
-
-            function showQuiz(logged_in){ //api 통해 내용 받아 카드들 내려주는 함수
-                $('#qlist').html("");
-
-                if (logged_in == true)
-                {
-                    $.ajax({
-                        type:"GET",
-                        url:"/api/public/data",
-                        data:{},
-                        success: function (response){
-                            let quizs = response["data"];
-                            for (let i = 0; i < quizs[2].length; i++){
-                                makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
-                            }
+            else {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/private/data",
+                    data: {},
+                    success: function (response) {
+                        let quizs = response["data"];
+                        for (let i = 0; i < quizs[2].length; i++) {
+                            makeCard(quizs[2][i], quizs[1][i], quizs[0][i])
                         }
-                    })
-                }
-
-                else
-                {
-                    $.ajax({
-                        type:"GET",
-                        url:"/api/private/data",
-                        data:{},
-                        success: function (response){
-                            let quizs = response["data"];
-                            for (let i = 0; i < quizs[2].length; i++){
-                                makeCard(quizs[2][i],quizs[1][i],quizs[0][i])
-                            }
-                        }
-                    })
-                }
+                    }
+                })
             }
-        </script>
-    </head>
+        }
+    </script>
+</head>
 
-    <!-- HTML 본문에 해당합니다. -->
-    <!-- HTML 태그를 이용해서 layout 을 대략적으로 잡아두고, -->
-    <!-- 위에 정의된 JavaScript 를 통해 동적으로 데이터를 조작해 최종 HTML 이 만들어집니다. -->
-    <body>
+<!-- HTML 본문에 해당합니다. -->
+<!-- HTML 태그를 이용해서 layout 을 대략적으로 잡아두고, -->
+<!-- 위에 정의된 JavaScript 를 통해 동적으로 데이터를 조작해 최종 HTML 이 만들어집니다. -->
+
+<body>
+    <div class="wrapper">
         <!-- 제목 부분 -->
-        <section class="hero is-link wrapper">
+        <section class="hero is-link header">
             <div class="hero-body wrap">
                 <div class="container center">
                     <h1 class="title">
@@ -241,31 +247,63 @@
 
                 <!-- 로그인 상태일 때 -->
                 {% if logged_in %}
-                    <h1 >안녕하세요, {{name}} 님!</h1>
-                    <div class="buttons is-right account-button">
-                        <button class="button is-white" onclick="logout()">로그아웃</button>
-                    </div>
+                <div class="buttons is-right account-button">
+                    <button class="button is-white" onclick="logout()">로그아웃</button>
+                </div>
                 {% else %}
-                    <!-- 로그아웃 상태일 때 -->
-                    <div class="buttons is-right account-button">
-                        
-                        <a href="{{ url_for('signin') }}">
-                        <button class="button is-white">로그인</button>
-                        </a>
-                        
-                        <a href="{{ url_for('signup') }}">
-                        <button class="button is-white">회원가입</button>
-                        </a>
+                <!-- 로그아웃 상태일 때 -->
+                <div class="buttons is-right account-button">
 
-                    </div>
+                    <a href="{{ url_for('signin') }}">
+                        <button class="button is-white">로그인</button>
+                    </a>
+
+                    <a href="{{ url_for('signup') }}">
+                        <button class="button is-white">회원가입</button>
+                    </a>
+
+                </div>
                 {% endif %}
             </div>
+            
+            {% if logged_in %}
+            <!-- 로그인 상태일 때 -->
+            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+                <div class="hero-body button-section">
+                    <h1>안녕하세요, {{name}} 님!</h1>
+                    <div id="createButton">
+                        <a href="{{url_for('introduceEdit')}}">
+                            <button class="button is-white is-large" #>자기소개 만들기</button>
+                        </a>
+                    </div>
+                    <div id="editButton">
+                        <a href="{{url_for('editQuizSelection')}}">
+                            <button class="button is-white is-large" onclick="">자기소개 수정</button>
+                        </a>
+                    </div>
+                    <button class="button is-white is-large" style="margin-top: 10px;">랜덤 맞추기!</button>
+                </div>
+            </section>
+            {% else %}
+            <!-- 로그아웃 상태일 때 -->
+            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+                <div class="hero-body button-section">
+                    <h1>로그인 하고 자기소개를 만들어보세요!</h1>
+                    <a href="{{ url_for('signin') }}">
+                        <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
+                    </a>
+                </div>
+            </section>
+            {% endif %}
         </section>
-        
+
+
         <h style="display: none;" id="page_introduce">{{is_introduced}}</h>
         <p style="display: none;" id="page_id">{{id}}</p>
         <!-- 동적으로 퀴즈 카드들이 들어갈 부분 -->
-        <div id="qlist" class = "columns is-multiline">
+        <div id="qlist" class="columns is-multiline">
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
