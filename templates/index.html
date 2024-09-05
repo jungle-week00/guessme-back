@@ -69,6 +69,16 @@
         .imgsizefix {
             width: 200px;
         }
+
+        .flexcard {
+            display : flex !important;
+            flex-direction : column;
+            align-items : center;
+        }
+
+        #profile_img{
+            max-height: 200px;
+        }
     </style>
 
     <!-- 이 HTML 에서 사용할 JavaScript 를 작성합니다. -->
@@ -171,9 +181,9 @@
         function makeCard(id, profile_image, name) {
             // 각 퀴즈 유저의 id 태그를 가져와 카드마다 적용
             let temp_html = `<div class="column is-one-third">
-                                    <div class="card">
+                                    <div class="card flexcard">
                                         <div class="card-image" id="${id}">
-                                            <img src="${profile_image}" alt="Profile Photo"/>
+                                            <img src="${profile_image}" id="profile_img" alt="Profile Photo"/>
                                         </div>
                                         <div class="card-content">
                                             <h1 class="quiz-title">${name}</h1>

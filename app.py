@@ -8,7 +8,7 @@ import os, uuid
 
 import base64, random, datetime
 
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://test:test@43.203.126.112', 27017)
 db = client.users
 
 app = Flask(__name__)
@@ -439,7 +439,6 @@ def quiz_form():
 def intro_form():
   return render_template('intro-form.html')
 # api 
-client = MongoClient('localhost', 27017)
 quiz_db = client.quizdb
 user_collection = quiz_db.userdb
 
