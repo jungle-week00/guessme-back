@@ -233,8 +233,7 @@
 							data: JSON.stringify(postData),
 							success: function (response) {
 								alert('모든 퀴즈와 자기소개가 성공적으로 제출되었습니다!');
-								
-								window.location.href('/');
+								location.href = "/"
 							},
 							error: function (xhr, status, error) {
 								alert('제출에 실패했습니다.');
@@ -244,75 +243,6 @@
 					}
 				});
 			});
-
-			// function onSubmitButton(id) {
-			// 		if (quizNumber <= 5) {
-			// 			// 퀴즈 입력 처리
-			// 			const question = $('#question').val();
-			// 			const correctAnswer = $('#correct-answer').val();
-			// 			const wrongAnswer1 = $('#wrong-answer-1').val();
-			// 			const wrongAnswer2 = $('#wrong-answer-2').val();
-			// 			const wrongAnswer3 = $('#wrong-answer-3').val();
-
-			// 			const quizData = {
-			// 				number: quizNumber,
-			// 				title: question,
-			// 				answer: {
-			// 					correct: correctAnswer,
-			// 					wrong: [wrongAnswer1, wrongAnswer2, wrongAnswer3],
-			// 				},
-			// 			};
-
-			// 			quizzes.push(quizData);
-
-			// 			// 입력 필드 초기화
-			// 			$('#question').val('');
-			// 			$('#correct-answer').val('');
-			// 			$('#wrong-answer-1').val('');
-			// 			$('#wrong-answer-2').val('');
-			// 			$('#wrong-answer-3').val('');
-
-			// 			// 프로그레스바 업데이트
-			// 			quizNumber++;
-			// 			updateProgress();
-
-			// 			if (quizNumber === 6) {
-			// 				// 마지막 자기소개로 이동
-			// 				$('.question-input, .answer-input').hide();
-			// 				$('#intro-section').show();
-			// 				actionButton.text('생성');
-			// 			}
-			// 		} else {
-			// 			// 자기소개 입력 처리 및 서버로 데이터 전송
-			// 			const introText = $('#intro-text').val();
-			// 			// let token = getCookie("access_token");
-			// 			if (token){
-							
-			// 			}
-			// 			// const userId = userId; 
-
-			// 			const postData = {
-			// 				user_id: userId,
-			// 				quizzes: quizzes,
-			// 				intro: introText, // 자기소개 추가
-			// 			};
-
-			// 			$.ajax({
-			// 				url: `/api/submit_intro/${userId}`,
-			// 				method: 'POST',
-			// 				contentType: 'application/json',
-			// 				data: JSON.stringify(postData),
-			// 				success: function (response) {
-			// 					alert('모든 퀴즈와 자기소개가 성공적으로 제출되었습니다!');
-			// 					window.location.reload();
-			// 				},
-			// 				error: function (xhr, status, error) {
-			// 					alert('제출에 실패했습니다.');
-			// 					console.error('Error:', error);
-			// 				},
-			// 			});
-			// 		}
-			// }
 		</script>
 	</body>
 </html>

@@ -96,23 +96,20 @@
             console.log(page_introduce);
 
             if (page_introduce == "True") {
-                createToEdit();
+               hideCreateButton();
             }
 
             else {
-                editToCreate();
+                showCreateButton()
             }
         });
 
         //자기소개 만들기 버튼을 자기소개 수정 버튼으로
-        function createToEdit() {
+        function hideCreateButton() {
             $('#createButton').hide();
-            $('#editButton').show();
         }
 
-        //자기소개 수정 버튼을 자기소개 만들기 버튼으로
-        function editToCreate() {
-            $('#editButton').hide();
+        function showCreateButton(){
             $('#createButton').show();
         }
 
@@ -265,37 +262,33 @@
                 </div>
                 {% endif %}
             </div>
-            
-            {% if logged_in %}
-            <!-- 로그인 상태일 때 -->
-            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
-                <div class="hero-body button-section">
-                    <h1>안녕하세요, {{name}} 님!</h1>
-                    <div id="createButton">
-                        <a href="{{url_for('introduceEdit')}}">
-                            <button class="button is-white is-large" #>자기소개 만들기</button>
-                        </a>
-                    </div>
-                    <div id="editButton">
-                        <a href="{{url_for('editQuizSelection')}}">
-                            <button class="button is-white is-large" onclick="">자기소개 수정</button>
-                        </a>
-                    </div>
-                    <button class="button is-white is-large" style="margin-top: 10px;">랜덤 맞추기!</button>
-                </div>
-            </section>
-            {% else %}
-            <!-- 로그아웃 상태일 때 -->
-            <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
-                <div class="hero-body button-section">
-                    <h1>로그인 하고 자기소개를 만들어보세요!</h1>
-                    <a href="{{ url_for('signin') }}">
-                        <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
+        </section>
+        
+        {% if logged_in %}
+        <!-- 로그인 상태일 때 -->
+        <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+            <div class="hero-body button-section">
+                <h1 style="font-size: 2rem;">안녕하세요, {{name}} 님!</h1>
+                <div id="createButton">
+                    <a href="{{url_for('introduceEdit')}}">
+                        <button class="button is-white is-large" #>자기소개 만들기</button>
                     </a>
                 </div>
-            </section>
-            {% endif %}
+                
+            </div>
         </section>
+        {% else %}
+        <!-- 로그아웃 상태일 때 -->
+        <section class="hero is-warning" style="max-width: 900px; margin: auto; margin-top: 10px;">
+            <div class="hero-body button-section">
+                <h1>로그인 하고 자기소개를 만들어보세요!</h1>
+                <a href="{{ url_for('signin') }}">
+                    <button class="button is-white border-button">로그인하고 자기소개 만들기</button>
+                </a>
+            </div>
+        </section>
+        {% endif %}
+       
 
 
         <h style="display: none;" id="page_introduce">{{is_introduced}}</h>

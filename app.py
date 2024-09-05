@@ -298,25 +298,6 @@ def register():
         "profile" : filename,
         "nickName" : userNickname,
         "hasIntroduce" : False,
-        "question1" : "",
-        "correctAnswer1" : "",
-        "incorrectAnswers1" : [],
-        
-        "question2" : "",
-        "correctAnswer2" : "",
-        "incorrectAnswers2" : [],
-        
-        "question3" : "",
-        "correctAnswer3" : "",
-        "incorrectAnswers3" : [],
-        
-        "question4" : "",
-        "correctAnswer4" : "",
-        "incorrectAnswers4" : [],
-        
-        "question5" : "",
-        "correctAnswer5" : "",
-        "incorrectAnswers5" : [],
     }
     
     db.userInfo.insert_one(new_userInfo)
@@ -434,7 +415,7 @@ def masking(text):
 @app.route('/api/public/data', methods=['GET'])
 def publicData():
     # 닉네임 List 전달
-    
+       
     nicknames = get_nicknames_with_true_value()
     images_url = get_profile_image_with_true_value(1)
     id_datas = get_id_with_true_value()
@@ -445,20 +426,6 @@ def publicData():
     data.append(id_datas)
     
     return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'data' : data})
-
-# 랜덤 유저 전달
-@app.route('/api/randUser', methods=['GET'])
-def randUser():
-    
-    # 닉네임 List 전달
-    nicknames = get_nicknames_with_true_value()
-    # 난수 추출
-    random_nickname = random.choice(nicknames)
-    random_user_id = db.userInfo.find_one({'nickName' : random_nickname}, {'_id' : 0})['id']
-    
-    return jsonify({'result' : 'success', 'msg' : '데이터를 정상적으로 수행 했습니다.', 'id' : random_user_id})
-
-### (2024-09-04) 20:00 // 박수호님 코드
 
 @app.route('/quiz')
 def quiz():
